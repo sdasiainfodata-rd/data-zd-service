@@ -1,11 +1,14 @@
 package com.asiainfo.dataservice;
 
+import com.asiainfo.menu.entity.MenuVo;
 import com.asiainfo.security.entity.User;
 import com.asiainfo.security.service.UserService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.HashMap;
@@ -17,6 +20,8 @@ import java.util.Set;
 public class DataserviceApplicationTests {
     @Autowired
     private UserService userService;
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     @Test
     public void testUser(){
@@ -59,5 +64,15 @@ public class DataserviceApplicationTests {
 
         User map = userService.userLogin("bajie", "123");
         System.out.println(map);
+    }
+
+    @Test
+    public void testMenu(){
+        Query query = new Query();
+        List<MenuVo> menu = mongoTemplate.find(query, MenuVo.class, "menu");
+//        System.out.println(menu);
+        for (MenuVo menuVo : menu) {
+            System.out.println(menuVo);
+        }
     }
 }

@@ -88,7 +88,7 @@ public class UserService {
      * @return java.util.Set
      */
     public Set<String> findUrlsById(String UserId) {
-        return findPermsById(UserId, "apiPermitions");
+        return findPermsById(UserId, "api_permitions");
     }
 
     /**
@@ -124,6 +124,7 @@ public class UserService {
                     //遍历角色权限
                     for (HashMap map : listRole) {
                         List<String> permitions = (List<String>) map.get(feildPermitions);
+                        if (permitions == null)return perms;
                         for (String permition : permitions) {
                             perms.add(permition);
                         }
