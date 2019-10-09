@@ -21,7 +21,7 @@ public class DataserviceApplicationTests {
     @Test
     public void testUser(){
         HashMap tom = userService.findUserByName("tom");
-        List api_permitions = (List) tom.get("api_permitions");
+        List api_permitions = (List) tom.get("apiPermitions");
         for (Object api_permition : api_permitions) {
             System.out.println(api_permition.toString());
         }

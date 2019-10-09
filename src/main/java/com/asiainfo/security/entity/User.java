@@ -14,6 +14,6 @@ public class User {
     private HashMap user;
     private String token;
     private List<HashMap> roles ;
-    private Set<String> api_permitions ;
+    private Set<String> apiPermitions;
     private Set<String> meanu ;
 }

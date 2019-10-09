@@ -26,7 +26,7 @@ public class UserService {
      *
      * @param username 用户名
      * @param password 密码
-     * @return java.util.HashMap
+     * @return com.asiainfo.security.entity.User
      */
     public User userLogin(String username, String password) {
         if (username == null) return null;
@@ -39,7 +39,9 @@ public class UserService {
         HashMap userMap = mongoTemplate.findOne(query, HashMap.class, "user");
         if (userMap == null || userMap.size() == 0) return null;
         User user = new User();
+        //设置user
         user.setUser(userMap);
+        //设置roles
         List<String> roles = (List<String>) userMap.get("roles");
         if (roles == null || roles.size() == 0) return user;
         ArrayList<HashMap> list = new ArrayList<>();
@@ -53,9 +55,10 @@ public class UserService {
 
         Object id = userMap.get("_id");
         if (id == null || StringUtils.isEmpty(id.toString())) return user;
+        //设置apipermitions
         Set<String> urlsById = findUrlsById(id.toString());
-        user.setApi_permitions(urlsById);
-
+        user.setApiPermitions(urlsById);
+        //设置meanu
         Set<String> menusById = findMenusById(id.toString());
         user.setMeanu(menusById);
 
@@ -79,19 +82,31 @@ public class UserService {
     }
 
     /**
-     * 通过_id查找用户
+     * 通过_id查找用户的所有api权限
      *
      * @param UserId _id
-     * @return java.util.HashMap
+     * @return java.util.Set
      */
     public Set<String> findUrlsById(String UserId) {
-        return findPermsById(UserId, "api_permitions");
+        return findPermsById(UserId, "apiPermitions");
     }
 
+    /**
+     * 通过_id查找用户的所有菜单权限
+     *
+     * @param UserId _id
+     * @return java.util.Set
+     */
     public Set<String> findMenusById(String UserId) {
         return findPermsById(UserId, "menu_permitions");
     }
 
+    /**
+     * 通过_id和字段查找用户的相关权限
+     * @param UserId _id
+     * @param feildPermitions roles中的相关权限字段
+     * @return java.util.Set
+     */
     private Set<String> findPermsById(String UserId, String feildPermitions) {
         if (UserId != null) {
             HashMap user = mongoTemplate.findById(UserId, HashMap.class, "user");
@@ -120,10 +135,19 @@ public class UserService {
         return null;
     }
 
+    /**
+     * 添加一个用户
+     * @param hashMap 用户的各个参数
+     */
     public void insertOneUser(HashMap<String, Object> hashMap) {
         mongoTemplate.insert(hashMap, "user");
     }
 
+    /**
+     * 通过roleName查找roles中的role记录
+     * @param roleName 角色名
+     * @return java.util.HashMap
+     */
     public HashMap findRoleByName(String roleName) {
         Query query = new Query();
         Criteria criteria = Criteria.where("name").is(roleName);
