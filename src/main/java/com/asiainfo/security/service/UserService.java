@@ -155,4 +155,16 @@ public class UserService {
         query.addCriteria(criteria);
         return mongoTemplate.findOne(query, HashMap.class, "roles");
     }
+
+    public Set<HashMap> findMenuByPerms(Set<String> perms){
+        HashSet<HashMap> menu = new HashSet<>();
+        for (String perm : perms) {
+            Query query = new Query();
+            Criteria criteria = Criteria.where("path").is(perm);
+            query.addCriteria(criteria);
+            HashMap one = mongoTemplate.findOne(query, HashMap.class, "menu");
+            menu.add(one);
+        }
+        return menu;
+    }
 }

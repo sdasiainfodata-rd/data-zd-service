@@ -75,4 +75,13 @@ public class DataserviceApplicationTests {
             System.out.println(menuVo);
         }
     }
+
+    @Test
+    public void testMenuUser(){
+        Set<String> menusById = userService.findMenusById("5d9d9fd43017c03018ba9259");
+        Set<HashMap> menuByPerms = userService.findMenuByPerms(menusById);
+        for (HashMap menuByPerm : menuByPerms) {
+            System.out.println(menuByPerm);
+        }
+    }
 }
