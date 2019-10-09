@@ -3,13 +3,18 @@ package com.asiainfo.security.controller;
 import com.asiainfo.security.entity.User;
 import com.asiainfo.security.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Mr.LkZ
@@ -46,5 +51,11 @@ public class UserController {
         if (hashMap.get("username")==null||hashMap.get("password")==null)return;
         hashMap.put("enabled", true);
         userService.insertOneUser(hashMap);
+    }
+
+    @RequestMapping("menu/{userId}")
+    public ResponseEntity getMenu(@PathVariable("userId") String userId){
+        Set<String> menusById = userService.findMenusById(userId);
+        return new ResponseEntity(userService.findMenuByPerms(menusById), HttpStatus.OK);
     }
 }
