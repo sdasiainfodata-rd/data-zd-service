@@ -173,6 +173,10 @@ public class UserService {
         return menu;
     }
 
+    /**
+     * 查询所有用户信息
+     * @return java.util.List
+     */
     public List<HashMap> findAll(){
         Query query = new Query();
         Criteria criteria = Criteria.where("enabled").is(true);
