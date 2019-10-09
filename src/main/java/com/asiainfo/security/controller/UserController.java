@@ -20,6 +20,7 @@ import java.util.Set;
  */
 
 @RestController
+//@RequestMapping("user")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -64,5 +65,14 @@ public class UserController {
     public ResponseEntity getMenu(@PathVariable("userId") String userId){
         Set<String> menusById = userService.findMenusById(userId);
         return new ResponseEntity(userService.findMenuByPerms(menusById), HttpStatus.OK);
+    }
+
+    /**
+     * 查询所有用户
+     * @return org.springframework.http.ResponseEntity
+     */
+    @RequestMapping("users")
+    public ResponseEntity getAllUsers(){
+        return new ResponseEntity(userService.findAll(),HttpStatus.OK);
     }
 }

@@ -83,5 +83,11 @@ public class DataserviceApplicationTests {
         for (HashMap menuByPerm : menuByPerms) {
             System.out.println(menuByPerm);
         }
+        System.out.println("========================================");
+
+        List<HashMap> all = userService.findAll();
+        for (HashMap map : all) {
+            System.out.println(map);
+        }
     }
 }

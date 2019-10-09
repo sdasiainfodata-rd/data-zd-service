@@ -172,4 +172,11 @@ public class UserService {
         }
         return menu;
     }
+
+    public List<HashMap> findAll(){
+        Query query = new Query();
+        Criteria criteria = Criteria.where("enabled").is(true);
+        query.addCriteria(criteria);
+        return mongoTemplate.find(query, HashMap.class, "user");
+    }
 }
