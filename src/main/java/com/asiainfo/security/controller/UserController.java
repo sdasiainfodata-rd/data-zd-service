@@ -28,10 +28,10 @@ public class UserController {
      * 用户登录
      * @param username 用户名
      * @param password 密码
-     * @return com.asiainfo.security.entity.User
+     * @return org.springframework.http.ResponseEntity
      */
     @RequestMapping("login")
-    public User getLogin(String username, String password){
+    public ResponseEntity getLogin(String username, String password){
         if (StringUtils.isEmpty(username)||StringUtils.isEmpty(password))return null;
         User user = userService.userLogin(username, password);
 //        System.out.println(map);
@@ -40,9 +40,13 @@ public class UserController {
         HashMap map = user.getUser();
         Object id = map.get("_id");
         user.setToken(id.toString());
-        return user;
+        return new ResponseEntity(user,HttpStatus.OK);
     }
 
+    /**
+     * 注册用户
+     * @param hashMap 用户的参数
+     */
     @RequestMapping("register")
     public void registerOneUser(@RequestParam HashMap<String,Object> hashMap){
         if (hashMap==null||hashMap.size()==0)return;
@@ -51,6 +55,11 @@ public class UserController {
         userService.insertOneUser(hashMap);
     }
 
+    /**
+     * 通过用户的id返回菜单实体类列表
+     * @param userId 用户的id
+     * @return org.springframework.http.ResponseEntity
+     */
     @RequestMapping("menu/{userId}")
     public ResponseEntity getMenu(@PathVariable("userId") String userId){
         Set<String> menusById = userService.findMenusById(userId);

@@ -156,6 +156,11 @@ public class UserService {
         return mongoTemplate.findOne(query, HashMap.class, "roles");
     }
 
+    /**
+     * 通过用户的权限查找对应的菜单实体
+     * @param perms 用户拥有的全部菜单权限
+     * @return java.util.Set
+     */
     public Set<HashMap> findMenuByPerms(Set<String> perms){
         HashSet<HashMap> menu = new HashSet<>();
         for (String perm : perms) {
