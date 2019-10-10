@@ -1,20 +1,16 @@
 package com.asiainfo.dataservice;
 
-import com.asiainfo.menu.entity.MenuVo;
 import com.asiainfo.security.mapper.UserMapper;
-import com.asiainfo.security.utils.JwtHelper;
+import com.asiainfo.security.utils.JwtTokenUtil;
 import io.jsonwebtoken.Claims;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -102,20 +98,34 @@ public class DataserviceApplicationTests {
         }
     }
 
+//    @Test
+//    public void testJWT(){
+//        String admin = JwtHelper.createJWT("admin", null, null);
+//        System.out.println("==================================================");
+//        System.out.println(admin);
+//        System.out.println("==================================================");
+//        String test = JwtHelper.createJWT("test", null, null);
+//        System.out.println(test);
+//        System.out.println("==================================================");
+//        Claims claims = JwtHelper.parseJWT(admin);
+//        System.out.println(claims);
+////        Claims claims1 = JwtHelper.parseJWT("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTU3MDY4MTQ3NCwiaWF0IjoxNTcwNjc0Mjc0fQ.C3m6-ejrgpvm4XCPXhw4d-IEpeU3iTBcN7Ix74k9eEd2-95ZL2cEjY9D0oZj2j1t9A0l3tMfAWgoab0zOrjFVg");
+////        System.out.println(claims1);
+//        String user_name = (String) claims.get("user_name");
+//        System.out.println(user_name);
+//    }
+
     @Test
-    public void testJWT(){
-        String admin = JwtHelper.createJWT("admin", null, null);
+    public void testJWT1(){
+        JwtTokenUtil jwtTokenUtil = new JwtTokenUtil();
+        String usernameFromToken = jwtTokenUtil.getUsernameFromToken("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTU3MDY4MTQ3NCwiaWF0IjoxNTcwNjc0Mjc0fQ.C3m6-ejrgpvm4XCPXhw4d-IEpeU3iTBcN7Ix74k9eEd2-95ZL2cEjY9D0oZj2j1t9A0l3tMfAWgoab0zOrjFVg");
+        System.out.println(usernameFromToken);
         System.out.println("==================================================");
+        String admin = jwtTokenUtil.generateToken("admin");
         System.out.println(admin);
         System.out.println("==================================================");
-        String test = JwtHelper.createJWT("test", null, null);
+        String test = jwtTokenUtil.generateToken("test");
         System.out.println(test);
         System.out.println("==================================================");
-        Claims claims = JwtHelper.parseJWT(admin);
-        System.out.println(claims);
-//        Claims claims1 = JwtHelper.parseJWT("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTU3MDY4MTQ3NCwiaWF0IjoxNTcwNjc0Mjc0fQ.C3m6-ejrgpvm4XCPXhw4d-IEpeU3iTBcN7Ix74k9eEd2-95ZL2cEjY9D0oZj2j1t9A0l3tMfAWgoab0zOrjFVg");
-//        System.out.println(claims1);
-        String user_name = (String) claims.get("user_name");
-        System.out.println(user_name);
     }
 }

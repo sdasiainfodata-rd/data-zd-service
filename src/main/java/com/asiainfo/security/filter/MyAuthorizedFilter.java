@@ -1,8 +1,7 @@
 package com.asiainfo.security.filter;
 
 import com.asiainfo.security.mapper.UserMapper;
-import com.asiainfo.security.utils.JwtHelper;
-import io.jsonwebtoken.Claims;
+import com.asiainfo.security.utils.JwtTokenUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,6 +22,8 @@ import java.util.List;
 public class MyAuthorizedFilter implements Filter {
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
     @Override
     public void init(FilterConfig filterConfig)  {
@@ -36,13 +37,15 @@ public class MyAuthorizedFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) servletRequest;
         String key = servletRequest.getParameter("KEY");
-        Claims claims = JwtHelper.parseJWT(key);
-        Object username = claims.get("user_name");
+
+
         //没有key,拒绝用户访问
         if (StringUtils.isEmpty(key)){
             req.getRequestDispatcher("/refuse.html").forward(servletRequest,servletResponse );
             return;
         }
+
+        String username = jwtTokenUtil.getUsernameFromToken(key);
         //获取urls,若权限urls为空,拒绝用户访问
         if (StringUtils.isEmpty(username)){
             req.getRequestDispatcher("/refuse.html").forward(servletRequest,servletResponse );
