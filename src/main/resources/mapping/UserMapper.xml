@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.asiainfo.security.mapper.UserMapper">
+    <select id="findUser" resultType="User">
+        SELECT * FROM USER WHERE username = #{username};
+    </select>
+    <select id="findAllUrl" resultType="string">
+        SELECT url.url FROM
+        USER u LEFT JOIN users_roles ur ON u.id = ur.user_id
+        LEFT JOIN roles_url ru ON ur.role_id = ru.role_id
+        LEFT JOIN url ON ru.url_id = url.id
+        WHERE username = #{username};
+    </select>
+
+</mapper>

@@ -10,3 +10,17 @@ spring:
   data:
       mongodb:
         uri: mongodb://dev:sdyx2019@47.105.40.83:20887/test
+  datasource:
+        username: root
+        password: root
+        url: jdbc:mysql://localhost:3306/eladmin?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
+        driver-class-name: com.mysql.cj.jdbc.Driver
+mybatis:
+  mapper-locations: classpath:mapping/*Mapper.xml
+  type-aliases-package: com.asiainfo.security.entity
+#showSql
+logging:
+  level:
+    com:
+      example:
+        mapper : debug
