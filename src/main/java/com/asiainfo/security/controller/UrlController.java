@@ -6,6 +6,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.HashMap;
+
 @Controller
 public class UrlController {
 //    @RequestMapping("{method}")
@@ -15,6 +17,8 @@ public class UrlController {
 
     @RequestMapping("/refuse")
     private ResponseEntity toRefuse(){
-        return new ResponseEntity(null, HttpStatus.UNAUTHORIZED);
+        HashMap<String, HttpStatus> status = new HashMap<>();
+        status.put("status", HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity(status, HttpStatus.UNAUTHORIZED);
     }
 }
