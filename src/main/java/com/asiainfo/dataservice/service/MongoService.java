@@ -1,5 +1,7 @@
 package com.asiainfo.dataservice.service;
 
+import com.asiainfo.dataservice.entity.EntityPage;
+
 import java.util.HashMap;
 import java.util.List;
 
@@ -11,5 +13,5 @@ import java.util.List;
 public interface MongoService {
     List<HashMap> queryGroupByKeyword(String keyword);
     List<HashMap> queryGroupByTime( String condition);
-    List<HashMap> queryAll(Integer num);
+    EntityPage queryAll(Integer num);
 }

@@ -2,6 +2,7 @@ package com.asiainfo.security.filter;
 
 import com.asiainfo.security.mapper.UserMapper;
 import com.asiainfo.security.utils.JwtTokenUtil;
+import jdk.nashorn.internal.ir.IfNode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -36,7 +37,21 @@ public class MyAuthorizedFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) servletRequest;
-        String key = servletRequest.getParameter("KEY");
+//        String key = servletRequest.getParameter("KEY");
+        final String requestHeader = req.getHeader("Authorization");
+
+        String username = null;
+        String key = null;
+        if (requestHeader != null && requestHeader.startsWith("Bearer ")) {
+            key = requestHeader.substring(7);
+            log.info("token="+key);
+            try {
+                username = jwtTokenUtil.getUsernameFromToken(key);
+                log.info("username="+username);
+            } catch (Exception e) {
+                log.error(e.getMessage());
+            }
+        }
 
 
         //没有key,拒绝用户访问
@@ -45,7 +60,7 @@ public class MyAuthorizedFilter implements Filter {
             return;
         }
 
-        String username = jwtTokenUtil.getUsernameFromToken(key);
+        username = jwtTokenUtil.getUsernameFromToken(key);
         //获取urls,若权限urls为空,拒绝用户访问
         if (StringUtils.isEmpty(username)){
             req.getRequestDispatcher("/refuse.html").forward(servletRequest,servletResponse );
@@ -64,7 +79,8 @@ public class MyAuthorizedFilter implements Filter {
         }
         //遍历权限,uri包含权限者转发不含key的uri
         for (String url : urls) {
-            if (requestURI != null && requestURI.contains(url)) {
+
+            if (requestURI != null && url!=null&& requestURI.contains(url)) {
                 req.getRequestDispatcher(requestURI).forward(servletRequest, servletResponse);
                 return;
             }

@@ -1,10 +1,13 @@
 package com.asiainfo.security.utils;
 
 import com.asiainfo.security.entity.User;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Clock;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.DefaultClock;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
@@ -21,7 +24,7 @@ public class JwtTokenUtil implements Serializable {
     private String secret = "mySecret";
 
 //    @Value("${jwt.expiration:7200000}")
-    private Long expiration = 7200000L;
+    private Long expiration = 604800000L;
 
 //    @Value("${jwt.header:Authorization}")
     private String tokenHeader = "Authorization";

@@ -1,5 +1,6 @@
 package com.asiainfo.dataservice.service.impl;
 
+import com.asiainfo.dataservice.entity.EntityPage;
 import com.asiainfo.dataservice.service.MongoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -82,7 +83,8 @@ public class MongoServiceImpl implements MongoService {
      * @return java.util.List
      */
     @Override
-    public List<HashMap> queryAll(Integer num) {
+    public EntityPage queryAll(Integer num) {
+        long totalElements = mongoTemplate.count(new Query(), long.class, "news");
         Query query = new Query();
         //分页参数
         int pageSize = 10;
@@ -96,6 +98,12 @@ public class MongoServiceImpl implements MongoService {
 
         //collectionName是mongodb中数据仓库的名字,应该从配置文件中获得,或者前台返回,暂时写死
         ArrayList<HashMap> list = (ArrayList<HashMap>) mongoTemplate.find(query, HashMap.class, "news");
-        return list;
+        //封装实体页
+        EntityPage entityPage = new EntityPage();
+        entityPage.setPage(num);
+        entityPage.setSize(pageSize);
+        entityPage.setTotalElements(totalElements);
+        entityPage.setContent(list);
+        return entityPage;
     }
 }
