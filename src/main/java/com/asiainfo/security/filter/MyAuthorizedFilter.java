@@ -59,8 +59,12 @@ public class MyAuthorizedFilter implements Filter {
             toRefusePage(req,servletResponse);
             return;
         }
+        try {
+            username = jwtTokenUtil.getUsernameFromToken(key);
+        }catch (Exception e){
+            toRefusePage(req,servletResponse );
+        }
 
-        username = jwtTokenUtil.getUsernameFromToken(key);
         //获取urls,若权限urls为空,拒绝用户访问
         if (StringUtils.isEmpty(username)){
             toRefusePage(req,servletResponse);
