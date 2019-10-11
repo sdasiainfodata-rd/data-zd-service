@@ -93,7 +93,8 @@ public class MyAuthorizedFilter implements Filter {
     private void toRefusePage(HttpServletRequest req,ServletResponse servletResponse) throws ServletException, IOException {
         HttpServletResponse resp = (HttpServletResponse) servletResponse;
         resp.setStatus(401);
-        req.getRequestDispatcher("/refuse.html").forward(req,resp );
+//        req.getRequestDispatcher("/refuse.html").forward(req,resp );
+        resp.sendRedirect("http://localhost:8013/401");
     }
 
     @Override
