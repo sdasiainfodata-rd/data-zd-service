@@ -2,7 +2,6 @@ package com.asiainfo.security.filter;
 
 import com.asiainfo.security.mapper.UserMapper;
 import com.asiainfo.security.utils.JwtTokenUtil;
-import jdk.nashorn.internal.ir.IfNode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
