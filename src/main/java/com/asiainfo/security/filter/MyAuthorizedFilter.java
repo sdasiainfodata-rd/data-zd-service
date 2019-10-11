@@ -10,6 +10,7 @@ import org.springframework.util.StringUtils;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
@@ -56,19 +57,19 @@ public class MyAuthorizedFilter implements Filter {
 
         //没有key,拒绝用户访问
         if (StringUtils.isEmpty(key)){
-            req.getRequestDispatcher("/refuse.html").forward(servletRequest,servletResponse );
+            toRefusePage(req,servletResponse);
             return;
         }
 
         username = jwtTokenUtil.getUsernameFromToken(key);
         //获取urls,若权限urls为空,拒绝用户访问
         if (StringUtils.isEmpty(username)){
-            req.getRequestDispatcher("/refuse.html").forward(servletRequest,servletResponse );
+            toRefusePage(req,servletResponse);
             return;
         }
         List<String> urls = userMapper.findAllUrl(username.toString());
         if (urls == null){
-            req.getRequestDispatcher("/refuse.html").forward(servletRequest,servletResponse );
+            toRefusePage(req,servletResponse);
             return;
         }
         String requestURI = req.getRequestURI();
@@ -87,7 +88,13 @@ public class MyAuthorizedFilter implements Filter {
         }
 
         //没有权限,拒绝访问
-        req.getRequestDispatcher("/refuse.html").forward(servletRequest,servletResponse );
+        toRefusePage(req,servletResponse);
+    }
+
+    private void toRefusePage(HttpServletRequest req,ServletResponse servletResponse) throws ServletException, IOException {
+        HttpServletResponse resp = (HttpServletResponse) servletResponse;
+        resp.setStatus(401);
+        req.getRequestDispatcher("/refuse.html").forward(req,resp );
     }
 
     @Override
