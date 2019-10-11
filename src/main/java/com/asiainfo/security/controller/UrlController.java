@@ -17,8 +17,8 @@ public class UrlController {
 
     @RequestMapping("/refuse")
     private ResponseEntity toRefuse(){
-        HashMap<String, HttpStatus> status = new HashMap<>();
-        status.put("status", HttpStatus.UNAUTHORIZED);
+        HashMap<String, Integer> status = new HashMap<>();
+        status.put("status", 401);
         return new ResponseEntity(status, HttpStatus.UNAUTHORIZED);
     }
 }
