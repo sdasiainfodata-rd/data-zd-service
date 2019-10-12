@@ -83,8 +83,8 @@ public class MyAuthorizedFilter implements Filter {
         }
         //遍历权限,uri包含权限者转发不含key的uri
         for (String url : urls) {
-
             if (requestURI != null && url!=null&& requestURI.contains(url)) {
+                requestURI = requestURI + "/" + username;
                 req.getRequestDispatcher(requestURI).forward(servletRequest, servletResponse);
                 return;
             }

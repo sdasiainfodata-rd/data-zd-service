@@ -1,16 +1,19 @@
 package com.asiainfo.dataservice;
 
+import com.asiainfo.security.entity.UserDP;
 import com.asiainfo.security.mapper.UserMapper;
 import com.asiainfo.security.utils.JwtTokenUtil;
-import io.jsonwebtoken.Claims;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.List;
+import java.util.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -128,5 +131,52 @@ public class DataserviceApplicationTests {
         String test = jwtTokenUtil.generateToken("test");
         System.out.println(test);
         System.out.println("==================================================");
+    }
+
+    @Test
+    public void testCreatCollecdp(){
+        Aggregation agg = Aggregation.newAggregation(
+                Aggregation.match(Criteria.where("isDelete").exists(false)),
+                Aggregation.group("source").count().as("num")
+
+        );
+        AggregationResults<HashMap> aggregationResults = mongoTemplate.aggregate(agg,"news" ,HashMap.class);
+        ArrayList<HashMap> list = new ArrayList<>();
+        list.addAll(aggregationResults.getMappedResults());
+
+        ArrayList<HashMap> docs = new ArrayList<>();
+        for (HashMap map : list) {
+            HashMap<String, String> doc = new HashMap<>();
+            String value = (String) map.get("_id");
+            doc.put("name",value );
+            mongoTemplate.insert(doc,"dataPermission" );
+        }
+
+    }
+
+    @Test
+    public void createUser(){
+        UserDP user = new UserDP();
+        user.setEnabled(true);
+        user.setUsername("admin");
+        user.setCreateTime(new Date());
+        user.setLastUpdateTime(new Date());
+        HashSet<String> auths = new HashSet<>();
+        auths.add("环球时报评论");
+        auths.add("东方网");
+        user.setAuthorities(auths);
+        HashMap<String, Set<String>> feildss = new HashMap<>();
+        HashSet<String> feilds = new HashSet<>();
+//        feilds.add("fromdb");
+        feilds.add("editor");
+//        feilds.add("nid");
+        feilds.add("time");
+        feilds.add("source");
+        feilds.add("title");
+//        feilds.add("content");
+//        feilds.add("url");
+        feildss.put("news",feilds );
+        user.setCollectionFeilds(feildss);
+        mongoTemplate.insert(user,"user_dp" );
     }
 }

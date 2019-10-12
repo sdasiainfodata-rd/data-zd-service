@@ -1,6 +1,5 @@
 package com.asiainfo.security.utils;
 
-import com.asiainfo.security.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Clock;
 import io.jsonwebtoken.Jwts;
@@ -105,14 +104,7 @@ public class JwtTokenUtil implements Serializable {
                 .compact();
     }
 
-    public Boolean validateToken(String token, User user) {
-        final Date created = getIssuedAtDateFromToken(token);
-//        final Date expiration = getExpirationDateFromToken(token);
-//        如果token存在，且token创建日期 > 最后修改密码的日期 则代表token有效
-        return (!isTokenExpired(token)
-                && !isCreatedBeforeLastPasswordReset(created, user.getLast_password_reset_time())
-        );
-    }
+
 
     private Date calculateExpirationDate(Date createdDate) {
         return new Date(createdDate.getTime() + expiration);

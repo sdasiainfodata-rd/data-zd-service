@@ -26,9 +26,9 @@ public class MongoController {
      * @param num 页码
      * @return org.springframework.http.ResponseEntity
      */
-    @RequestMapping("/news/page/{num}")
-    public ResponseEntity getMongoData(@PathVariable("num")Integer num){
-        return new ResponseEntity(mongoService.queryAll(num), HttpStatus.OK);
+    @RequestMapping("/news/page/{num}/{username}")
+    public ResponseEntity getMongoData(@PathVariable("num")Integer num,@PathVariable("username")String username){
+        return new ResponseEntity(mongoService.queryAll(num,username), HttpStatus.OK);
     }
 
     /**
@@ -36,9 +36,9 @@ public class MongoController {
      * @param keyword 具体字段
      * @return org.springframework.http.ResponseEntity
      */
-    @RequestMapping("/news/group/{keyword}")
-    public ResponseEntity getGroup(@PathVariable("keyword") String keyword){
-        return new ResponseEntity(mongoService.queryGroupByKeyword(keyword), HttpStatus.OK);
+    @RequestMapping("/news/group/{keyword}/{username}")
+    public ResponseEntity getGroup(@PathVariable("keyword") String keyword,@PathVariable("username")String username){
+        return new ResponseEntity(mongoService.queryGroupByKeyword(keyword,username), HttpStatus.OK);
         //[{"amount":3,"_id":"type1"},{"amount":5,"_id":"type2"}]
     }
 
@@ -47,9 +47,9 @@ public class MongoController {
      * @param condition 具体时间 day month year
      * @return org.springframework.http.ResponseEntity
      */
-    @RequestMapping("/news/time/{condition}")
-    public ResponseEntity getGroupByTime(@PathVariable("condition")String condition){
-        return new ResponseEntity(mongoService.queryGroupByTime(condition), HttpStatus.OK);
+    @RequestMapping("/news/time/{condition}/{username}")
+    public ResponseEntity getGroupByTime(@PathVariable("condition")String condition,@PathVariable("username")String username){
+        return new ResponseEntity(mongoService.queryGroupByTime(condition,username), HttpStatus.OK);
         //[{amount=34, _id=2016-05-16}, {amount=137, _id=2018-11-13}]
     }
 }

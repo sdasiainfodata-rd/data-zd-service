@@ -2,6 +2,7 @@ package com.asiainfo.dataservice.service.impl;
 
 import com.asiainfo.dataservice.entity.EntityPage;
 import com.asiainfo.dataservice.service.MongoService;
+import com.asiainfo.security.utils.DataPermissionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.project;
 
@@ -27,16 +29,21 @@ public class MongoServiceImpl implements MongoService {
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    @Autowired
+    private DataPermissionUtils dataPermissionUtils;
+
     /**
      * 根据数据的一个字段统计字段中相同值的数量
      * @param keyword 数据字段名
      * @return java.util.List
      */
     @Override
-    public List<HashMap> queryGroupByKeyword(String keyword) {
+    public List<HashMap> queryGroupByKeyword(String keyword,String username) {
+        //判断是否有字段权限
+        if (!dataPermissionUtils.isHaveFeildPermission(keyword, username)) return null;
         //聚合 过滤存在isDelete字段的数据,根据keyword字段分类 并统计各个类的数据总数,存入amount字段
         Aggregation agg = Aggregation.newAggregation(
-                Aggregation.match(Criteria.where("isDelete").exists(false)),
+                Aggregation.match(dataPermissionUtils.getCriteriaWithRowPermission(username)),//设置行权限
                 Aggregation.group(keyword).count().as("amount"),
                 Aggregation.sort(Sort.Direction.DESC,"amount")
         );
@@ -54,7 +61,9 @@ public class MongoServiceImpl implements MongoService {
      * @return java.util.List
      */
     @Override
-    public List<HashMap> queryGroupByTime(String condition) {
+    public List<HashMap> queryGroupByTime(String condition,String username) {
+        //判断是否有字段权限
+        if (!dataPermissionUtils.isHaveFeildPermission("time", username)) return null;
         int start = 0;
         int len = 10;
         if ("month".equals(condition)){
@@ -65,8 +74,9 @@ public class MongoServiceImpl implements MongoService {
             start = 0;
             len = 4;
         }
+
         Aggregation agg = Aggregation.newAggregation(
-                Aggregation.match(Criteria.where("isDelete").exists(false)),
+                Aggregation.match(dataPermissionUtils.getCriteriaWithRowPermission(username)),//设置行权限
                 project().andExpression( "substr(time,"+start+","+len+")").as("day"),//substr中8代表开始位置,向后取两位
                 Aggregation.group("day").count().as("amount"),
                 Aggregation.sort(Sort.Direction.DESC,"amount")
@@ -83,7 +93,9 @@ public class MongoServiceImpl implements MongoService {
      * @return java.util.List
      */
     @Override
-    public EntityPage queryAll(Integer num) {
+    public EntityPage queryAll(Integer num,String username) {
+
+
         long totalElements = mongoTemplate.count(new Query(), long.class, "news");
         Query query = new Query();
         //分页参数
@@ -92,9 +104,13 @@ public class MongoServiceImpl implements MongoService {
         query.skip(start);
         query.limit(pageSize);
 
-        //未删除
-        Criteria isDelete = Criteria.where("isDelete").exists(false);
-        query.addCriteria(isDelete);
+        //设置行权限
+        Criteria criteria = dataPermissionUtils.getCriteriaWithRowPermission(username);
+        //按行权限排序
+        query.with(new Sort(Sort.Direction.ASC,"source"));
+        //设置字段权限
+        dataPermissionUtils.setFeildsPermissions(username, query);
+        query.addCriteria(criteria);
 
         //collectionName是mongodb中数据仓库的名字,应该从配置文件中获得,或者前台返回,暂时写死
         ArrayList<HashMap> list = (ArrayList<HashMap>) mongoTemplate.find(query, HashMap.class, "news");
@@ -106,4 +122,6 @@ public class MongoServiceImpl implements MongoService {
         entityPage.setContent(list);
         return entityPage;
     }
+
+
 }

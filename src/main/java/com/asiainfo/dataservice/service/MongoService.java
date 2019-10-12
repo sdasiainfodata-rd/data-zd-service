@@ -11,7 +11,7 @@ import java.util.List;
  * @version 2019/10/718:07
  */
 public interface MongoService {
-    List<HashMap> queryGroupByKeyword(String keyword);
-    List<HashMap> queryGroupByTime( String condition);
-    EntityPage queryAll(Integer num);
+    List<HashMap> queryGroupByKeyword(String keyword,String username);
+    List<HashMap> queryGroupByTime( String condition,String username);
+    EntityPage queryAll(Integer num,String username);
 }
