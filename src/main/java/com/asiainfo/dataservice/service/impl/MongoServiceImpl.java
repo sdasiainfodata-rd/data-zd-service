@@ -94,9 +94,11 @@ public class MongoServiceImpl implements MongoService {
      */
     @Override
     public EntityPage queryAll(Integer num,String username) {
+        //设置行权限
+        Criteria criteria = dataPermissionUtils.getCriteriaWithRowPermission(username);
+        if (criteria == null) return new EntityPage();
 
-
-        long totalElements = mongoTemplate.count(new Query(), long.class, "news");
+        long totalElements = mongoTemplate.count(new Query().addCriteria(criteria), long.class, "news");
         Query query = new Query();
         //分页参数
         int pageSize = 10;
@@ -104,8 +106,7 @@ public class MongoServiceImpl implements MongoService {
         query.skip(start);
         query.limit(pageSize);
 
-        //设置行权限
-        Criteria criteria = dataPermissionUtils.getCriteriaWithRowPermission(username);
+
         //按行权限排序
         query.with(new Sort(Sort.Direction.ASC,"source"));
         //设置字段权限

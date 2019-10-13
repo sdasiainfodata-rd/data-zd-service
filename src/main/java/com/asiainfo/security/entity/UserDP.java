@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -19,7 +20,7 @@ public class UserDP {
     private Date createTime; // datetime DEFAULT NULL COMMENT '创建日期',
     @Field("last_update_time")
     private Date lastUpdateTime; // datetime DEFAULT NULL COMMENT '最后更能日期',
-    private Set<String> authorities;
+    private Set<List<HashMap<String,String>>> authorities;
     @Field("collection_feilds")
     private HashMap<String,Set<String>> collectionFeilds;
     private boolean enabled;

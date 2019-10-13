@@ -2,6 +2,7 @@ package com.asiainfo.dataservice;
 
 import com.asiainfo.security.entity.UserDP;
 import com.asiainfo.security.mapper.UserMapper;
+import com.asiainfo.security.service.UserMongoService;
 import com.asiainfo.security.utils.JwtTokenUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,6 +12,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.*;
@@ -24,6 +26,10 @@ public class DataserviceApplicationTests {
     private MongoTemplate mongoTemplate;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private UserMongoService userMongoService;
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
 //    @Test
 //    public void testUser(){
@@ -161,9 +167,44 @@ public class DataserviceApplicationTests {
         user.setUsername("admin");
         user.setCreateTime(new Date());
         user.setLastUpdateTime(new Date());
-        HashSet<String> auths = new HashSet<>();
-        auths.add("环球时报评论");
-        auths.add("东方网");
+        //添加权限
+        HashSet<List<HashMap<String,String>>> auths = new HashSet<>();
+
+        ArrayList<HashMap<String,String>> auth1 = new ArrayList<>();
+        HashMap<String, String> map11 = new HashMap<>();
+        map11.put("feild", "source");
+        map11.put("value","东方网" );
+        auth1.add(map11);
+        HashMap<String, String> map12 = new HashMap<>();
+        map12.put("feild", "editor");
+        map12.put("value","杨易颖" );
+        auth1.add(map12);
+
+        ArrayList<HashMap<String,String>> auth2 = new ArrayList<>();
+        HashMap<String, String> map21 = new HashMap<>();
+        map21.put("feild","source" );
+        map21.put("value", "海外网");
+        auth2.add(map21);
+        HashMap<String, String> map22 = new HashMap<>();
+        map22.put("feild", "editor");
+        map22.put("value","李杭" );
+        auth2.add(map22);
+
+
+        ArrayList<HashMap<String,String>> auth3 = new ArrayList<>();
+        HashMap<String, String> map31 = new HashMap<>();
+        map31.put("feild","source" );
+        map31.put("value", "海外网");
+        auth3.add(map31);
+        HashMap<String, String> map32 = new HashMap<>();
+        map32.put("feild", "editor");
+        map32.put("value","责任编辑：乔敬_NN6607" );
+        auth3.add(map32);
+
+        auths.add(auth1);
+        auths.add(auth2);
+        auths.add(auth3);
+
         user.setAuthorities(auths);
         HashMap<String, Set<String>> feildss = new HashMap<>();
         HashSet<String> feilds = new HashSet<>();
@@ -179,4 +220,306 @@ public class DataserviceApplicationTests {
         user.setCollectionFeilds(feildss);
         mongoTemplate.insert(user,"user_dp" );
     }
+
+
+    @Test
+    public void createUserAdmin(){
+        String username = "admin";
+        createAndPrintToken(username);
+
+        UserDP user = new UserDP();
+        user.setEnabled(true);
+        user.setUsername(username);
+        user.setCreateTime(new Date());
+        user.setLastUpdateTime(new Date());
+        //添加权限
+        HashSet<List<HashMap<String,String>>> auths = new HashSet<>();
+        ArrayList<HashMap<String, String>> maps = new ArrayList<>();
+        HashMap<String, String> map = new HashMap<>();
+        map.put("admin","admin" );
+        maps.add(map);
+        auths.add(maps);
+        user.setAuthorities(auths);
+        HashMap<String, Set<String>> feildss = new HashMap<>();
+        HashSet<String> feilds = new HashSet<>();
+        feilds.add("editor");
+        feilds.add("time");
+        feilds.add("source");
+        feilds.add("title");
+        feildss.put("news",feilds );
+        user.setCollectionFeilds(feildss);
+        mongoTemplate.insert(user,"user_dp" );
+    }
+
+    @Test
+    public void createUserTestNull(){
+        String username = "testNull";
+        createAndPrintToken(username);
+
+        UserDP user = new UserDP();
+        user.setEnabled(true);
+        user.setUsername(username);
+        user.setCreateTime(new Date());
+        user.setLastUpdateTime(new Date());
+        //添加权限
+        HashSet<List<HashMap<String,String>>> auths = new HashSet<>();
+        user.setAuthorities(auths);
+        HashMap<String, Set<String>> feildss = new HashMap<>();
+        HashSet<String> feilds = new HashSet<>();
+        feilds.add("editor");
+        feilds.add("time");
+        feilds.add("source");
+        feilds.add("title");
+        feildss.put("news",feilds );
+        user.setCollectionFeilds(feildss);
+        mongoTemplate.insert(user,"user_dp" );
+    }
+
+    @Test
+    public void createUserTestSource(){
+        String username = "testSource";
+        createAndPrintToken(username);
+
+        UserDP user = new UserDP();
+        user.setEnabled(true);
+        user.setUsername(username);
+        user.setCreateTime(new Date());
+        user.setLastUpdateTime(new Date());
+        //添加权限
+        HashSet<List<HashMap<String,String>>> auths = new HashSet<>();
+
+        ArrayList<HashMap<String,String>> auth1 = new ArrayList<>();
+        HashMap<String, String> map11 = new HashMap<>();
+        map11.put("feild", "source");
+        map11.put("value","东方网" );
+        auth1.add(map11);
+
+        ArrayList<HashMap<String,String>> auth2 = new ArrayList<>();
+        HashMap<String, String> map21 = new HashMap<>();
+        map21.put("feild","source" );
+        map21.put("value", "海外网");
+        auth2.add(map21);
+
+        auths.add(auth1);
+        auths.add(auth2);
+
+        user.setAuthorities(auths);
+        HashMap<String, Set<String>> feildss = new HashMap<>();
+        HashSet<String> feilds = new HashSet<>();
+        feilds.add("editor");
+        feilds.add("time");
+        feilds.add("source");
+        feilds.add("title");
+        feildss.put("news",feilds );
+        user.setCollectionFeilds(feildss);
+        mongoTemplate.insert(user,"user_dp" );
+    }
+
+    @Test
+    public void createUserTestSourceAndEditor(){
+        String username = "testSourceAndEditor";
+        createAndPrintToken(username);
+
+        UserDP user = new UserDP();
+        user.setEnabled(true);
+        user.setUsername(username);
+        user.setCreateTime(new Date());
+        user.setLastUpdateTime(new Date());
+        //添加权限
+        HashSet<List<HashMap<String,String>>> auths = new HashSet<>();
+
+        ArrayList<HashMap<String,String>> auth1 = new ArrayList<>();
+        HashMap<String, String> map11 = new HashMap<>();
+        map11.put("feild", "source");
+        map11.put("value","东方网" );
+        auth1.add(map11);
+        HashMap<String, String> map12 = new HashMap<>();
+        map12.put("feild", "editor");
+        map12.put("value","杨易颖" );
+        auth1.add(map12);
+
+        ArrayList<HashMap<String,String>> auth2 = new ArrayList<>();
+        HashMap<String, String> map21 = new HashMap<>();
+        map21.put("feild","source" );
+        map21.put("value", "海外网");
+        auth2.add(map21);
+        HashMap<String, String> map22 = new HashMap<>();
+        map22.put("feild", "editor");
+        map22.put("value","李杭" );
+        auth2.add(map22);
+
+
+        ArrayList<HashMap<String,String>> auth3 = new ArrayList<>();
+        HashMap<String, String> map31 = new HashMap<>();
+        map31.put("feild","source" );
+        map31.put("value", "海外网");
+        auth3.add(map31);
+        HashMap<String, String> map32 = new HashMap<>();
+        map32.put("feild", "editor");
+        map32.put("value","责任编辑：乔敬_NN6607" );
+        auth3.add(map32);
+
+        auths.add(auth1);
+        auths.add(auth2);
+        auths.add(auth3);
+
+        user.setAuthorities(auths);
+        HashMap<String, Set<String>> feildss = new HashMap<>();
+        HashSet<String> feilds = new HashSet<>();
+        feilds.add("editor");
+        feilds.add("time");
+        feilds.add("source");
+        feilds.add("title");
+        feildss.put("news",feilds );
+        user.setCollectionFeilds(feildss);
+        mongoTemplate.insert(user,"user_dp" );
+    }
+
+    @Test
+    public void createUserTestFeildleast(){
+        String username = "testFeildlest";
+        createAndPrintToken(username);
+
+        UserDP user = new UserDP();
+        user.setEnabled(true);
+        user.setUsername(username);
+        user.setCreateTime(new Date());
+        user.setLastUpdateTime(new Date());
+        //添加权限
+        HashSet<List<HashMap<String,String>>> auths = new HashSet<>();
+
+        ArrayList<HashMap<String,String>> auth1 = new ArrayList<>();
+        HashMap<String, String> map11 = new HashMap<>();
+        map11.put("feild", "source");
+        map11.put("value","东方网" );
+        auth1.add(map11);
+        HashMap<String, String> map12 = new HashMap<>();
+        map12.put("feild", "editor");
+        map12.put("value","杨易颖" );
+        auth1.add(map12);
+
+        ArrayList<HashMap<String,String>> auth2 = new ArrayList<>();
+        HashMap<String, String> map21 = new HashMap<>();
+        map21.put("feild","source" );
+        map21.put("value", "海外网");
+        auth2.add(map21);
+        HashMap<String, String> map22 = new HashMap<>();
+        map22.put("feild", "editor");
+        map22.put("value","李杭" );
+        auth2.add(map22);
+
+
+        ArrayList<HashMap<String,String>> auth3 = new ArrayList<>();
+        HashMap<String, String> map31 = new HashMap<>();
+        map31.put("feild","source" );
+        map31.put("value", "海外网");
+        auth3.add(map31);
+        HashMap<String, String> map32 = new HashMap<>();
+        map32.put("feild", "editor");
+        map32.put("value","责任编辑：乔敬_NN6607" );
+        auth3.add(map32);
+
+        auths.add(auth1);
+        auths.add(auth2);
+        auths.add(auth3);
+
+        user.setAuthorities(auths);
+        HashMap<String, Set<String>> feildss = new HashMap<>();
+        HashSet<String> feilds = new HashSet<>();
+//        feilds.add("editor");
+        feilds.add("time");
+//        feilds.add("source");
+        feilds.add("title");
+        feildss.put("news",feilds );
+        user.setCollectionFeilds(feildss);
+        mongoTemplate.insert(user,"user_dp" );
+    }
+
+    @Test
+    public void createUserTestFeildNotime(){
+        String username = "testFeildNotime";
+        createAndPrintToken(username);
+
+        UserDP user = new UserDP();
+        user.setEnabled(true);
+        user.setUsername(username);
+        user.setCreateTime(new Date());
+        user.setLastUpdateTime(new Date());
+        //添加权限
+        HashSet<List<HashMap<String,String>>> auths = new HashSet<>();
+
+        ArrayList<HashMap<String,String>> auth1 = new ArrayList<>();
+        HashMap<String, String> map11 = new HashMap<>();
+        map11.put("feild", "source");
+        map11.put("value","东方网" );
+        auth1.add(map11);
+        HashMap<String, String> map12 = new HashMap<>();
+        map12.put("feild", "editor");
+        map12.put("value","杨易颖" );
+        auth1.add(map12);
+
+        ArrayList<HashMap<String,String>> auth2 = new ArrayList<>();
+        HashMap<String, String> map21 = new HashMap<>();
+        map21.put("feild","source" );
+        map21.put("value", "海外网");
+        auth2.add(map21);
+        HashMap<String, String> map22 = new HashMap<>();
+        map22.put("feild", "editor");
+        map22.put("value","李杭" );
+        auth2.add(map22);
+
+
+        ArrayList<HashMap<String,String>> auth3 = new ArrayList<>();
+        HashMap<String, String> map31 = new HashMap<>();
+        map31.put("feild","source" );
+        map31.put("value", "海外网");
+        auth3.add(map31);
+        HashMap<String, String> map32 = new HashMap<>();
+        map32.put("feild", "editor");
+        map32.put("value","责任编辑：乔敬_NN6607" );
+        auth3.add(map32);
+
+        auths.add(auth1);
+        auths.add(auth2);
+        auths.add(auth3);
+
+        user.setAuthorities(auths);
+        HashMap<String, Set<String>> feildss = new HashMap<>();
+        HashSet<String> feilds = new HashSet<>();
+//        feilds.add("editor");
+//        feilds.add("time");
+//        feilds.add("source");
+        feilds.add("title");
+        feildss.put("news",feilds );
+        user.setCollectionFeilds(feildss);
+        mongoTemplate.insert(user,"user_dp" );
+    }
+
+    @Test
+    public void createUsers(){
+        createUserAdmin();
+        createUserTestNull();
+        createUserTestSource();
+        createUserTestSourceAndEditor();
+        createUserTestFeildNotime();
+    }
+
+    @Test
+    public void showToken(){
+        createAndPrintToken("admin");
+        createAndPrintToken("testNull");
+        createAndPrintToken("testSource");
+        createAndPrintToken("testSourceAndEditor");
+        createAndPrintToken("testFeildlest");
+        createAndPrintToken("testFeildNotime");
+    }
+
+    private void createAndPrintToken(String username) {
+        System.out.println("======================================================");
+        String token = jwtTokenUtil.generateToken(username);
+        System.out.println(username+":token:  "+token);
+        System.out.println("======================================================");
+    }
+
+
 }
