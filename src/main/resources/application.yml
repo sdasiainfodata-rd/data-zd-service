@@ -7,9 +7,6 @@ server:
 spring:
   application:
     name: datacenter
-  data:
-      mongodb:
-        uri: mongodb://dev:sdyx2019@47.105.40.83:20887/test
   datasource:
         username: root
         password: root
@@ -24,3 +21,4 @@ logging:
     com:
       example:
         mapper : debug
+#//ghghhgh
