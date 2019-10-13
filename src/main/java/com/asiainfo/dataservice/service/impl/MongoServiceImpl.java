@@ -108,14 +108,19 @@ public class MongoServiceImpl implements MongoService {
 
 
         //按行权限排序
-        Set<String> feilds = dataPermissionUtils.getRowPermissionFeilds(username);
+        Set<String> feilds = dataPermissionUtils.getFeildsFromRowPermission(username);
         for (String feild : feilds) {
             query.with(new Sort(Sort.Direction.ASC,feild));
         }
 
         //设置字段权限
         query.fields().exclude("_id");
-        dataPermissionUtils.setFeildsPermissions(username, query);
+        try {
+            dataPermissionUtils.setFeildsPermissions(username, query);
+        }catch (RuntimeException e){
+            return new EntityPage();
+        }
+
         query.addCriteria(criteria);
 
         //collectionName是mongodb中数据仓库的名字,应该从配置文件中获得,或者前台返回,暂时写死

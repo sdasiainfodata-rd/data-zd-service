@@ -89,6 +89,9 @@ public class DataPermissionUtils {
      */
     public void setFeildsPermissions(String username, Query query) {
         Set<String> feilds = getFeildsPermissions(username);
+        if (feilds == null||feilds.size()==0){
+            throw new RuntimeException("没有授权字段...");
+        }
         for (String feild : feilds) {
             query.fields().include(feild);
         }
@@ -112,7 +115,7 @@ public class DataPermissionUtils {
         return false;
     }
 
-    public Set<String> getRowPermissionFeilds(String username){
+    public Set<String> getFeildsFromRowPermission(String username){
         Set<List<HashMap<String, String>>> rowPermissions = getRowPermissions(username);
         if (rowPermissions == null)return new HashSet<>();
         HashSet<String> feilds = new HashSet<>();
