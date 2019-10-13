@@ -253,10 +253,14 @@ public class DataserviceApplicationTests {
         user.setAuthorities(auths);
         HashMap<String, Set<String>> feildss = new HashMap<>();
         HashSet<String> feilds = new HashSet<>();
+        feilds.add("fromdb");
         feilds.add("editor");
+        feilds.add("nid");
         feilds.add("time");
         feilds.add("source");
         feilds.add("title");
+        feilds.add("content");
+        feilds.add("url");
         feildss.put("news",feilds );
         user.setCollectionFeilds(feildss);
         mongoTemplate.insert(user,"user_dp" );
