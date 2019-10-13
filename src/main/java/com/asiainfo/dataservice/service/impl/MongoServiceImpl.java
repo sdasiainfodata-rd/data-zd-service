@@ -108,8 +108,13 @@ public class MongoServiceImpl implements MongoService {
 
 
         //按行权限排序
-        query.with(new Sort(Sort.Direction.ASC,"source"));
+        Set<String> feilds = dataPermissionUtils.getRowPermissionFeilds(username);
+        for (String feild : feilds) {
+            query.with(new Sort(Sort.Direction.ASC,feild));
+        }
+
         //设置字段权限
+        query.fields().exclude("_id");
         dataPermissionUtils.setFeildsPermissions(username, query);
         query.addCriteria(criteria);
 

@@ -3,6 +3,7 @@ package com.asiainfo.dataservice;
 import com.asiainfo.security.entity.UserDP;
 import com.asiainfo.security.mapper.UserMapper;
 import com.asiainfo.security.service.UserMongoService;
+import com.asiainfo.security.utils.DataPermissionUtils;
 import com.asiainfo.security.utils.JwtTokenUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +31,8 @@ public class DataserviceApplicationTests {
     private UserMongoService userMongoService;
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
+    @Autowired
+    private DataPermissionUtils dataPermissionUtils;
 
 //    @Test
 //    public void testUser(){
@@ -98,6 +101,14 @@ public class DataserviceApplicationTests {
 //            System.out.println(map);
 //        }
 //    }
+
+    @Test
+    public void showFeilds(){
+        Set<String> feilds = dataPermissionUtils.getRowPermissionFeilds("testSourceAndEditor");
+        for (String feild : feilds) {
+            System.out.println(feild);
+        }
+    }
 
     @Test
     public void testUserMapper(){

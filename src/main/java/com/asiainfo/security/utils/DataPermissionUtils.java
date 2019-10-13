@@ -112,6 +112,21 @@ public class DataPermissionUtils {
         return false;
     }
 
+    public Set<String> getRowPermissionFeilds(String username){
+        Set<List<HashMap<String, String>>> rowPermissions = getRowPermissions(username);
+        if (rowPermissions == null)return new HashSet<>();
+        HashSet<String> feilds = new HashSet<>();
+        for (List<HashMap<String, String>> rowPermission : rowPermissions) {
+            if (rowPermission==null) continue;
+            for (HashMap<String, String> map : rowPermission) {
+                if (map==null||map.size()==0)continue;
+                String feild = map.get("feild");
+                if (!StringUtils.isEmpty(feild))feilds.add(feild);
+            }
+        }
+        return feilds;
+    }
+
     /**
      * 通过用户名查询mongodb中相应的用户数据权限数据
      * @param username 用户名
