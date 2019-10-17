@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.HashMap;
 
 @Controller
-public class UrlController {
+public class DispatcherController {
 //    @RequestMapping("{method}")
 //    private String goToUrl(@PathVariable("method") String method){
 //        return method;

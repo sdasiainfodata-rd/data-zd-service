@@ -6,9 +6,11 @@ import java.util.Date;
 import java.util.Set;
 
 /**
+ * 查询sql中的实体类
  * @author Mr.LkZ
  * @version 2019/10/812:30
  */
+//用来判断url权限
 @Data
 public class User {
     private Long id; // bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',

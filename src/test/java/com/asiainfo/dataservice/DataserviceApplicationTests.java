@@ -2,7 +2,7 @@ package com.asiainfo.dataservice;
 
 import com.asiainfo.security.entity.UserDP;
 import com.asiainfo.security.mapper.UserMapper;
-import com.asiainfo.security.service.UserMongoService;
+import com.asiainfo.security.service.impl.UserMongoServiceImpl;
 import com.asiainfo.security.utils.DataPermissionUtils;
 import com.asiainfo.security.utils.JwtTokenUtil;
 import org.junit.Test;
@@ -27,7 +27,7 @@ public class DataserviceApplicationTests {
     @Autowired
     private UserMapper userMapper;
     @Autowired
-    private UserMongoService userMongoService;
+    private UserMongoServiceImpl userMongoServiceImpl;
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
     @Autowired

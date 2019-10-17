@@ -15,6 +15,7 @@ import java.util.Set;
  */
 @Data
 public class UserDP {
+    private String _id;
     private String username;
     @Field("create_time")
     private Date createTime; // datetime DEFAULT NULL COMMENT '创建日期',
