@@ -3,7 +3,6 @@ package com.asiainfo.security.controller;
 import com.asiainfo.security.entity.UserDP;
 import com.asiainfo.security.entity.criteria.UserMongoCriteria;
 import com.asiainfo.security.service.UserMongoService;
-import com.asiainfo.security.service.impl.UserMongoServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -20,7 +19,7 @@ public class UserMongoController {
     @Autowired
     private UserMongoService userMongoService;
 
-    @GetMapping("/user/{username}")
+    @GetMapping("/users/{username}")
     public ResponseEntity getUserDp(@PathVariable("username")String username){
         return new ResponseEntity(userMongoService.findUserDpByName(username),HttpStatus.OK);
     }
@@ -28,7 +27,7 @@ public class UserMongoController {
 //    ("查询用户")
     @GetMapping(value = "/users")
     public ResponseEntity getUsers(UserMongoCriteria criteria, Pageable pageable){
-        return new ResponseEntity(null,HttpStatus.OK);
+        return new ResponseEntity(userMongoService.queryAll(criteria,pageable ),HttpStatus.OK);
     }
 
 //    ("新增用户")

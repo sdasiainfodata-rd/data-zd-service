@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.project;
 
@@ -39,16 +38,17 @@ public class MongoServiceImpl implements MongoService {
      */
     @Override
     public List<HashMap> queryGroupByKeyword(String keyword,String username) {
-        //判断是否有字段权限
-        if (!dataPermissionUtils.isHaveFeildPermission(keyword, username)) return null;
+        //获取数据权限
+        Criteria permissions = dataPermissionUtils.getCriteriaWithDataPermissions(username);
+        if (permissions == null)return null;
         //聚合 过滤存在isDelete字段的数据,根据keyword字段分类 并统计各个类的数据总数,存入amount字段
         Aggregation agg = Aggregation.newAggregation(
-                Aggregation.match(dataPermissionUtils.getCriteriaWithRowPermission(username)),//设置行权限
+                Aggregation.match(permissions),//设置行权限
                 Aggregation.group(keyword).count().as("amount"),
                 Aggregation.sort(Sort.Direction.DESC,"amount")
         );
         //collectionName是mongodb中数据仓库的名字,应该从配置文件中获得,或者前台返回,暂时写死
-        AggregationResults<HashMap> aggregate = mongoTemplate.aggregate(agg,"news", HashMap.class);
+        AggregationResults<HashMap> aggregate = mongoTemplate.aggregate(agg,"news_test", HashMap.class);
         ArrayList<HashMap> list = new ArrayList<>();
         list.addAll(aggregate.getMappedResults());
 
@@ -62,8 +62,10 @@ public class MongoServiceImpl implements MongoService {
      */
     @Override
     public List<HashMap> queryGroupByTime(String condition,String username) {
-        //判断是否有字段权限
-        if (!dataPermissionUtils.isHaveFeildPermission("time", username)) return null;
+        //获取数据权限
+        Criteria permissions = dataPermissionUtils.getCriteriaWithDataPermissions(username);
+        if (permissions == null)return null;
+
         int start = 0;
         int len = 10;
         if ("month".equals(condition)){
@@ -76,12 +78,12 @@ public class MongoServiceImpl implements MongoService {
         }
 
         Aggregation agg = Aggregation.newAggregation(
-                Aggregation.match(dataPermissionUtils.getCriteriaWithRowPermission(username)),//设置行权限
+                Aggregation.match(permissions),//设置数据权限
                 project().andExpression( "substr(time,"+start+","+len+")").as("day"),//substr中8代表开始位置,向后取两位
                 Aggregation.group("day").count().as("amount"),
                 Aggregation.sort(Sort.Direction.DESC,"amount")
         );
-        AggregationResults<HashMap> aggregationResults = mongoTemplate.aggregate(agg,"news" ,HashMap.class);
+        AggregationResults<HashMap> aggregationResults = mongoTemplate.aggregate(agg,"news_test" ,HashMap.class);
         ArrayList<HashMap> list = new ArrayList<>();
         list.addAll(aggregationResults.getMappedResults());
         return list;
@@ -94,37 +96,27 @@ public class MongoServiceImpl implements MongoService {
      */
     @Override
     public EntityPage queryAll(Integer num,String username) {
-        //设置行权限
-        Criteria criteria = dataPermissionUtils.getCriteriaWithRowPermission(username);
+//        设置数据权限
+        Criteria criteria = dataPermissionUtils.getCriteriaWithDataPermissions(username);
         if (criteria == null) return new EntityPage();
 
-        long totalElements = mongoTemplate.count(new Query().addCriteria(criteria), long.class, "news");
+        long totalElements = mongoTemplate.count(new Query().addCriteria(criteria), long.class, "news_test");
         Query query = new Query();
         //分页参数
-        int pageSize = 10;
+        int pageSize = 1000;
         int start = (num - 1) * pageSize;
         query.skip(start);
         query.limit(pageSize);
 
 
-        //按行权限排序
-        Set<String> feilds = dataPermissionUtils.getFeildsFromRowPermission(username);
-        for (String feild : feilds) {
-            query.with(new Sort(Sort.Direction.ASC,feild));
-        }
 
-        //设置字段权限
+        //不显示_id
         query.fields().exclude("_id");
-        try {
-            dataPermissionUtils.setFeildsPermissions(username, query);
-        }catch (RuntimeException e){
-            return new EntityPage();
-        }
 
         query.addCriteria(criteria);
 
         //collectionName是mongodb中数据仓库的名字,应该从配置文件中获得,或者前台返回,暂时写死
-        ArrayList<HashMap> list = (ArrayList<HashMap>) mongoTemplate.find(query, HashMap.class, "news");
+        ArrayList<HashMap> list = (ArrayList<HashMap>) mongoTemplate.find(query, HashMap.class, "news_test");
         //封装实体页
         EntityPage entityPage = new EntityPage();
         entityPage.setPage(num);

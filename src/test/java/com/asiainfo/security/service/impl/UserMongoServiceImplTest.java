@@ -32,26 +32,32 @@ public class UserMongoServiceImplTest {
     @Test
     public void queryAll() {
         UserMongoCriteria userMongoCriteria = new UserMongoCriteria();
-//        userMongoCriteria.setUsername("test");
-//        HashMap<String, String> hashMap = new HashMap<>();
-//        hashMap.put("source","东方网" );
-//        userMongoCriteria.setRow(hashMap);
-//        List<HashMap> list = userMongoService.queryAll(userMongoCriteria, null);
-//        for (HashMap map : list) {
-//            System.out.println(map);
-//        }
 
-//        userMongoService.queryAll(userMongoCriteria,null );
-//        userMongoCriteria.setFeild("time");
-//        HashSet userNameWithFeildPermission = userMongoService.getUserNameWithFeildPermission(userMongoCriteria);
-//        System.out.println(userNameWithFeildPermission);
-//        UserDP userDP = new UserDP();
-//        userDP.setUsername("testCreate11");
-//        UserDP userDP1 = userMongoService.create(userDP);
-//        System.out.println(userDP1);
         List<HashMap> list = userMongoService.queryAll(null, null);
         for (HashMap map : list) {
             System.out.println(map);
         }
+    }
+
+    @Test
+    public void findUserDpByName1() {
+        HashMap user1 = userMongoService.findUserDpByName("user1");
+        System.out.println(user1);
+    }
+
+    @Test
+    public void queryAll1() {
+    }
+
+    @Test
+    public void create() {
+    }
+
+    @Test
+    public void update() {
+    }
+
+    @Test
+    public void delete() {
     }
 }

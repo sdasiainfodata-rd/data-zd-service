@@ -6,10 +6,9 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
-import java.util.regex.Pattern;
 
 /**
  * @author Mr.LkZ
@@ -20,114 +19,28 @@ public class DataPermissionUtils {
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    /**
-     * 获取用户的行数据权限
-     * @param username 用户名
-     * @return java.util.Set
-     */
-    public Set<List<HashMap<String,String>>> getRowPermissions(String username){
-        UserDP user = getUserDP(username);
-        if (user == null) return null;
-        return user.getAuthorities();
-    }
-
-    /**
-     * 获取用户的字段权限
-     * @param username 用户名
-     * @return java.util.Set
-     */
-    public Set<String> getFeildsPermissions(String username){
-        UserDP user = getUserDP(username);
-        return user.getCollectionFeilds().get("news");
-    }
-
-//    public Criteria getCriteriaWithRowPermission(Set<String> rows) {
-//        return Criteria.where("isDelete").exists(false) //未删除
-//                .and("source").in(rows); //设置行权限
-//    }
 
     /**
      * 获取用户的行数据权限,并将其封装到查询条件中
      * @param username 用户名
      * @return org.springframework.data.mongodb.core.query.Criteria
      */
-    public Criteria getCriteriaWithRowPermission(String username) {
-        Set<List<HashMap<String,String>>> rows = getRowPermissions(username);
-        if(rows == null || rows.size() == 0) return null;//没有任何权限时,返回为空
-
-        if (rows.size() == 1){
-            for (List<HashMap<String, String>> row : rows) {
-                if (row!=null&&row.size()==1||row.get(0).get("admin")!=null){
-                    return new Criteria();
-                }
-            }
+    public Criteria getCriteriaWithDataPermissions(String username) {
+        HashSet<String> permissions = getPermissionsFromUsername(username);
+        if(CollectionUtils.isEmpty(permissions)) return null;//没有任何权限时,返回为空
+        if (permissions.contains("admin")) {//如果是管理员权限,不做任何限制
+            return new Criteria();
         }
-
-        Criteria criteria = Criteria.where("isDelete").exists(false);
-        HashSet<Criteria> criteriasSet = new HashSet<>();
-        for (List<HashMap<String,String>> row : rows) {
-            if (row==null||row.size()==0)continue;
-            Criteria criteriaRow = new Criteria();
-            for (HashMap<String,String> map : row) {
-                String feild =  map.get("feild");
-                String value = map.get("value");
-                //包含value
-                Pattern pattern= Pattern.compile("^.*"+value+".*$", Pattern.CASE_INSENSITIVE);
-                criteriaRow.and(feild).regex(pattern);
-            }
-            criteriasSet.add(criteriaRow);
+        Criteria criteria = new Criteria();
+        HashSet<Criteria> criterias = new HashSet<>();
+        for (String permission : permissions) {
+            Criteria element = Criteria.where("data_permissions").is(permission);
+            criterias.add(element);
         }
-        Criteria[] cri = new Criteria[criteriasSet.size()];
-        criteria.orOperator(criteriasSet.toArray(cri));
-        return criteria;
-    }
-
-    /**
-     * 向查询条件中添加对应用户的字段条件限制
-     * @param username 用户名
-     * @param query 查询条件
-     */
-    public void setFeildsPermissions(String username, Query query) {
-        Set<String> feilds = getFeildsPermissions(username);
-        if (feilds == null||feilds.size()==0){
-            throw new RuntimeException("没有授权字段...");
-        }
-        for (String feild : feilds) {
-            query.fields().include(feild);
-        }
-    }
-
-    /**
-     * 判断用户是否有该字段的数据权限
-     * @param feild 字段
-     * @param username 用户名
-     * @return boolean
-     */
-    public boolean isHaveFeildPermission(String feild,String username){
-        if (StringUtils.isEmpty(username))return false;
-        Set<String> feildsPermissions = getFeildsPermissions(username);
-        if (feildsPermissions == null)return false;
-        for (String feildsPermission : feildsPermissions) {
-            if (!StringUtils.isEmpty(feildsPermission)&&feildsPermission.equals(feild)){
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public Set<String> getFeildsFromRowPermission(String username){
-        Set<List<HashMap<String, String>>> rowPermissions = getRowPermissions(username);
-        if (rowPermissions == null)return new HashSet<>();
-        HashSet<String> feilds = new HashSet<>();
-        for (List<HashMap<String, String>> rowPermission : rowPermissions) {
-            if (rowPermission==null) continue;
-            for (HashMap<String, String> map : rowPermission) {
-                if (map==null||map.size()==0)continue;
-                String feild = map.get("feild");
-                if (!StringUtils.isEmpty(feild))feilds.add(feild);
-            }
-        }
-        return feilds;
+        Criteria[] cri = new Criteria[criterias.size()];
+        criteria.orOperator(criterias.toArray(cri));
+//        criteria.andOperator((Criteria) CollectionUtils.arrayToList(criterias));
+        return criteria.and("is_delete").exists(false);
     }
 
     /**
@@ -135,10 +48,57 @@ public class DataPermissionUtils {
      * @param username 用户名
      * @return com.asiainfo.security.entity.UserDP
      */
-    private UserDP getUserDP(String username) {
+    public UserDP getUserDP(String username) {
         Query query = new Query();
-        Criteria criteria = Criteria.where("enabled").is(true).and("username").is(username);
+        Criteria criteria = Criteria.where("is_delete").is(false).and("data_roles").exists(true)
+                .and("username").is(username);
         query.addCriteria(criteria);
         return mongoTemplate.findOne(query, UserDP.class, "user_dp");
+    }
+
+    /**
+     * 获取用户的行数据权限
+     * @param username 用户名
+     * @return java.util.Set
+     */
+    private List<String> getDataRoles(String username){
+        UserDP user = getUserDP(username);
+        if (user == null) return null;
+        return user.getDataRoles();
+    }
+
+    /**
+     * 得到用户数据权限的集合
+     * @param roles 角色集合
+     * @return java.util.HashSet
+     */
+    private HashSet<String> getPermissionFromRoles(List<String> roles){
+        if (CollectionUtils.isEmpty(roles)) return null;
+        HashSet<String> permissions = new HashSet<>();
+        //判断管理员权限
+        if (roles.contains("admin")){
+            permissions.add("admin");
+            return permissions;
+        }
+        //如果是一般用户
+        for (String roleName : roles) {
+            Criteria exists = Criteria.where(roleName).exists(true);
+            HashMap role = mongoTemplate.findOne(new Query().addCriteria(exists), HashMap.class, "roles");
+            ArrayList<String> rolePermissions = (ArrayList<String>) role.get(roleName);
+            for (String rolePermission : rolePermissions) {
+                permissions.add(rolePermission);
+            }
+        }
+        return permissions;
+    }
+
+    /**
+     * 根据用户名得到数据权限集合
+     * @param username 用户名
+     * @return java.util.HashSet
+     */
+    private HashSet<String> getPermissionsFromUsername(String username){
+        List<String> dataRoles = getDataRoles(username);
+        return getPermissionFromRoles(dataRoles);
     }
 }

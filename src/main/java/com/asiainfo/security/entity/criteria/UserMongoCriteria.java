@@ -11,6 +11,5 @@ import java.util.HashMap;
 @Data
 public class UserMongoCriteria {
     private String username;
-    private HashMap row;
-    private String feild;
+    private String dataRoles;
 }
