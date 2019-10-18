@@ -29,9 +29,6 @@ public class MongoConfig {
         MongoClientOptions.Builder builder = new MongoClientOptions.Builder();
         builder.connectionsPerHost(properties.getMaxConnectionsPerHost());
         builder.minConnectionsPerHost(properties.getMinConnectionsPerHost());
-// if (properties.getReplicaSet() != null) {
-// builder.requiredReplicaSetName(properties.getReplicaSet());
-// }
 
         builder.threadsAllowedToBlockForConnectionMultiplier(
                 properties.getThreadsAllowedToBlockForConnectionMultiplier());
@@ -41,7 +38,6 @@ public class MongoConfig {
         builder.maxConnectionLifeTime(properties.getMaxConnectionLifeTime());
         builder.connectTimeout(properties.getConnectTimeout());
         builder.socketTimeout(properties.getSocketTimeout());
-//        builder.socketKeepAlive(properties.getSocketKeepAlive());
         builder.sslEnabled(properties.getSslEnabled());
         builder.sslInvalidHostNameAllowed(properties.getSslInvalidHostNameAllowed());
         builder.alwaysUseMBeans(properties.getAlwaysUseMBeans());
