@@ -22,3 +22,7 @@ logging:
       example:
         mapper : debug
 #//ghghhgh
+#collection
+mongodb:
+  data:
+    collection1: news_data_permission

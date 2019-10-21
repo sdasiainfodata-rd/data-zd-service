@@ -4,6 +4,7 @@ import com.asiainfo.dataservice.entity.EntityPage;
 import com.asiainfo.dataservice.service.MongoService;
 import com.asiainfo.security.utils.DataPermissionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -31,6 +32,9 @@ public class MongoServiceImpl implements MongoService {
     @Autowired
     private DataPermissionUtils dataPermissionUtils;
 
+    @Value("${mongodb.data.collection1}")
+    private String collection;
+
     /**
      * 根据数据的一个字段统计字段中相同值的数量
      * @param keyword 数据字段名
@@ -48,7 +52,7 @@ public class MongoServiceImpl implements MongoService {
                 Aggregation.sort(Sort.Direction.DESC,"amount")
         );
         //collectionName是mongodb中数据仓库的名字,应该从配置文件中获得,或者前台返回,暂时写死
-        AggregationResults<HashMap> aggregate = mongoTemplate.aggregate(agg,"news_test", HashMap.class);
+        AggregationResults<HashMap> aggregate = mongoTemplate.aggregate(agg,collection, HashMap.class);
         ArrayList<HashMap> list = new ArrayList<>();
         list.addAll(aggregate.getMappedResults());
 
@@ -83,7 +87,7 @@ public class MongoServiceImpl implements MongoService {
                 Aggregation.group("day").count().as("amount"),
                 Aggregation.sort(Sort.Direction.DESC,"amount")
         );
-        AggregationResults<HashMap> aggregationResults = mongoTemplate.aggregate(agg,"news_test" ,HashMap.class);
+        AggregationResults<HashMap> aggregationResults = mongoTemplate.aggregate(agg,collection ,HashMap.class);
         ArrayList<HashMap> list = new ArrayList<>();
         list.addAll(aggregationResults.getMappedResults());
         return list;
@@ -100,7 +104,7 @@ public class MongoServiceImpl implements MongoService {
         Criteria criteria = dataPermissionUtils.getCriteriaWithDataPermissions(username);
         if (criteria == null) return new EntityPage();
 
-        long totalElements = mongoTemplate.count(new Query().addCriteria(criteria), long.class, "news_test");
+        long totalElements = mongoTemplate.count(new Query().addCriteria(criteria), long.class, collection);
         Query query = new Query();
         //分页参数
         int pageSize = 1000;
@@ -112,11 +116,13 @@ public class MongoServiceImpl implements MongoService {
 
         //不显示_id
         query.fields().exclude("_id");
+        //为了展示和测试方便,不显示content!
+        query.fields().exclude("content");
 
         query.addCriteria(criteria);
 
         //collectionName是mongodb中数据仓库的名字,应该从配置文件中获得,或者前台返回,暂时写死
-        ArrayList<HashMap> list = (ArrayList<HashMap>) mongoTemplate.find(query, HashMap.class, "news_test");
+        ArrayList<HashMap> list = (ArrayList<HashMap>) mongoTemplate.find(query, HashMap.class, collection);
         //封装实体页
         EntityPage entityPage = new EntityPage();
         entityPage.setPage(num);

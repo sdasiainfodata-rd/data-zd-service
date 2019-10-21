@@ -31,16 +31,20 @@ public class DataPermissionUtils {
         if (permissions.contains("admin")) {//如果是管理员权限,不做任何限制
             return new Criteria();
         }
-        Criteria criteria = new Criteria();
+//        Criteria exists = Criteria.where("is_delete").exists(false);
+//        Criteria isDelete = Criteria.where("is_delete").is(false);
+//        Criteria isNotDelete = new Criteria().orOperator(exists, isDelete);
+        //判断有权限存在,数据并没有标记删除
+        Criteria criteria = Criteria.where("data_permissions").exists(true).and("is_delete").exists(false);
         HashSet<Criteria> criterias = new HashSet<>();
         for (String permission : permissions) {
             Criteria element = Criteria.where("data_permissions").is(permission);
             criterias.add(element);
         }
         Criteria[] cri = new Criteria[criterias.size()];
-        criteria.orOperator(criterias.toArray(cri));
+        return criteria.orOperator(criterias.toArray(cri));
 //        criteria.andOperator((Criteria) CollectionUtils.arrayToList(criterias));
-        return criteria.and("is_delete").exists(false);
+//        return criteria;
     }
 
     /**

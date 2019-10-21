@@ -76,13 +76,15 @@ public class DataPermissionUtilsTest {
 
     @Test
     public void showToken(){
-        createAndPrintToken("user1");
-        createAndPrintToken("user2");
-        createAndPrintToken("userP3");
         createAndPrintToken("userP1");
+        createAndPrintToken("userP2");
+        createAndPrintToken("userP3");
+        createAndPrintToken("userP1P2");
+        createAndPrintToken("userTwoRole");
+        createAndPrintToken("userP1P2P3");
         createAndPrintToken("userAdmin");
-        createAndPrintToken("user6");
-        createAndPrintToken("user7");
+        createAndPrintToken("userEmpty");
+        createAndPrintToken("userNull");
     }
 
     private void createAndPrintToken(String username) {

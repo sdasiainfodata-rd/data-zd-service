@@ -1,4 +1,4 @@
-package com.asiainfo.dataservice.config;
+package com.asiainfo.security.config;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
@@ -41,7 +41,7 @@ public class HttpsConfig {
         Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
         connector.setScheme("http");
         //Connector监听的http的端口号
-        connector.setPort(8000);
+        connector.setPort(9091);
         connector.setSecure(false);
         //监听到http的端口号后转向到的https的端口号
         connector.setRedirectPort(9090);
