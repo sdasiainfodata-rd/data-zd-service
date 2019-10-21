@@ -15,6 +15,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -71,7 +72,14 @@ public class RoleMongoServiceImpl implements RoleMongoService {
             }
             query.addCriteria(roleName);
         }
-        return mongoTemplate.find(query, HashMap.class, "roles");
+        List<HashMap> list = mongoTemplate.find(query, HashMap.class, "roles");
+        ArrayList<HashMap> roles = new ArrayList<>();
+        for (HashMap map : list) {
+            String _id = map.get("_id").toString();
+            map.put("id",_id );
+            roles.add(map);
+        }
+        return roles;
     }
 
     /**
@@ -98,7 +106,7 @@ public class RoleMongoServiceImpl implements RoleMongoService {
     public void update(RoleDP resources) {
         if (resources == null||StringUtils.isEmpty(resources.getRoleName()))
             throw new RuntimeException("角色名不能为空...");
-        HashMap role = mongoTemplate.findById(resources.get_id(),HashMap.class,"roles" );
+        HashMap role = mongoTemplate.findById(resources.getId(),HashMap.class,"roles" );
         if (role==null) throw new RuntimeException("不存在该角色...");
         resources.set_id(role.get("_id").toString());
         resources.setCreateTime((Date) role.get("create_time"));
