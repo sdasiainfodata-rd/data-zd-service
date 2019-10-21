@@ -37,7 +37,9 @@ public class UserMongoServiceImpl implements UserMongoService {
         Query query = new Query();
         Criteria criteria = Criteria.where("is_delete").is(false).and("username").is(username);
         query.addCriteria(criteria);
-        return mongoTemplate.findOne(query,HashMap.class ,"user_dp" );
+        HashMap userDp = mongoTemplate.findOne(query, HashMap.class, "user_dp");
+        userDp.put("id",userDp.get("_id").toString() );
+        return userDp;
     }
 
     /**
