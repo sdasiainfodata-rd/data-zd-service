@@ -15,7 +15,7 @@ import java.util.List;
  */
 public interface RoleMongoService {
     /**
-     * 根据角色名查询用户
+     * 根据角色名查询角色
      * @param roleName 角色名
      * @return java.util.HashMap
      */
@@ -30,20 +30,20 @@ public interface RoleMongoService {
     List<HashMap> queryAll(RoleMongoCriteria criteria, Pageable pageable);
 
     /**
-     * 插入新的用户
-     * @param resources 用户
+     * 插入新的角色
+     * @param resources 角色
      * @return com.asiainfo.security.entity.UserDP
      */
     RoleDP create(RoleDP resources);
 
     /**
-     * 更新用户
-     * @param resources 用户
+     * 更新角色
+     * @param resources 角色
      */
     void update(RoleDP resources);
 
     /**
-     * 删除用户,实际是将enable设为false,并非真正从数据库删除用户
+     * 删除角色,实际是将enable设为false,并非真正从数据库删除角色
      * @param id
      */
     void delete(String id);

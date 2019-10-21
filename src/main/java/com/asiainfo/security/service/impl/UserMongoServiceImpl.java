@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -68,7 +69,14 @@ public class UserMongoServiceImpl implements UserMongoService {
             }
             query.addCriteria(username);
         }
-        return mongoTemplate.find(query, HashMap.class, "user_dp");
+        List<HashMap> list = mongoTemplate.find(query, HashMap.class, "user_dp");
+        ArrayList<HashMap> users = new ArrayList<>();
+        for (HashMap map : list) {
+            String _id = (String) map.get("_id");
+            map.put("id",_id );
+            users.add(map);
+        }
+        return users;
     }
 
     /**

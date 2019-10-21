@@ -1,6 +1,7 @@
 package com.asiainfo.security.entity;
 
 import lombok.Data;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -29,4 +30,6 @@ public class UserDP {
 //    private HashMap<String,Set<String>> collectionFeilds;
     @Field("is_delete")
     private boolean isDelete;
+    @Transient
+    private String id;
 }

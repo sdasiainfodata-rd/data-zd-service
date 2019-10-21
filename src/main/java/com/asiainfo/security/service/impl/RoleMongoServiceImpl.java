@@ -30,8 +30,8 @@ public class RoleMongoServiceImpl implements RoleMongoService {
     private MongoTemplate mongoTemplate;
 
     /**
-     * 根据用户名查询可用的用户
-     * @param rolename 用户名
+     * 根据角色名查询可用的角色
+     * @param rolename 角色名
      * @return java.util.HashMap
      */
     @Override
@@ -43,7 +43,7 @@ public class RoleMongoServiceImpl implements RoleMongoService {
     }
 
     /**
-     * 根据条件分页查询所有用户
+     * 根据条件分页查询所有角色
      * @param criteria 搜索的条件
      * @param pageable 分页
      * @return java.util.List
@@ -62,7 +62,7 @@ public class RoleMongoServiceImpl implements RoleMongoService {
             query.with(sort);
         }
         if (criteria!= null&&!StringUtils.isEmpty(criteria.getRoleName())) {
-            //根据criteria获取用户名
+            //根据criteria获取角色名
             Pattern pattern = Pattern.compile("^.*" + criteria.getRoleName() + ".*$", Pattern.CASE_INSENSITIVE);
             Criteria roleName = Criteria.where("role_name").regex(pattern);
             if (!StringUtils.isEmpty(criteria.getPermission())) {
@@ -75,8 +75,8 @@ public class RoleMongoServiceImpl implements RoleMongoService {
     }
 
     /**
-     * 插入新的用户
-     * @param resources 用户
+     * 插入新的角色
+     * @param resources 角色
      * @return com.asiainfo.security.entity.UserDP
      */
     @Override
@@ -91,8 +91,8 @@ public class RoleMongoServiceImpl implements RoleMongoService {
     }
 
     /**
-     * 更新用户
-     * @param resources 用户
+     * 更新角色
+     * @param resources 角色
      */
     @Override
     public void update(RoleDP resources) {
@@ -107,7 +107,7 @@ public class RoleMongoServiceImpl implements RoleMongoService {
     }
 
     /**
-     * 删除用户,实际是将enable设为false,并非真正从数据库删除用户
+     * 删除角色,实际是将enable设为false,并非真正从数据库删除角色
      * @param id
      */
     @Override

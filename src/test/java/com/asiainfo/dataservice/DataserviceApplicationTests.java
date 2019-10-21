@@ -590,6 +590,7 @@ public class DataserviceApplicationTests {
     @Test
     public void showToken(){
         createAndPrintToken("admin");
+        createAndPrintToken("userAdmin");
         createAndPrintToken("testNull");
         createAndPrintToken("testSource");
         createAndPrintToken("testSourceAndEditor");
