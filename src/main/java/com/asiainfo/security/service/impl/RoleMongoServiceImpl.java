@@ -98,12 +98,11 @@ public class RoleMongoServiceImpl implements RoleMongoService {
     public void update(RoleDP resources) {
         if (resources == null||StringUtils.isEmpty(resources.getRoleName()))
             throw new RuntimeException("角色名不能为空...");
-        HashMap role = findRoleDpByName(resources.getRoleName());
-        if (role == null) throw new RuntimeException("不存在该角色...");
+        HashMap role = mongoTemplate.findById(resources.get_id(),HashMap.class,"roles" );
+        if (role==null) throw new RuntimeException("不存在该角色...");
         resources.set_id(role.get("_id").toString());
         resources.setCreateTime((Date) role.get("create_time"));
         resources.setLastUpdateTime(new Date());
-        if (role==null) throw new RuntimeException("不存在该角色...");
         mongoTemplate.save(resources,"roles" );
     }
 
