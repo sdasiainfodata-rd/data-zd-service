@@ -103,6 +103,7 @@ public class UserMongoServiceImpl implements UserMongoService {
     public void update(UserDP resources) {
         if (resources == null||StringUtils.isEmpty(resources.getUsername()))
             throw new RuntimeException("用户名不能为空...");
+        if (StringUtils.isEmpty(resources.getId())) throw new RuntimeException("没有用户数据中台id...");
         HashMap user = mongoTemplate.findById(resources.getId(),HashMap.class ,"user_dp");
         if (user==null) throw new RuntimeException("不存在该用户...");
         resources.set_id(user.get("_id").toString());
