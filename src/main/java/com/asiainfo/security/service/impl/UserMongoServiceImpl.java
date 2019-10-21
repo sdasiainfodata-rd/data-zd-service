@@ -72,7 +72,7 @@ public class UserMongoServiceImpl implements UserMongoService {
         List<HashMap> list = mongoTemplate.find(query, HashMap.class, "user_dp");
         ArrayList<HashMap> users = new ArrayList<>();
         for (HashMap map : list) {
-            String _id = (String) map.get("_id");
+            String _id = map.get("_id").toString();
             map.put("id",_id );
             users.add(map);
         }
