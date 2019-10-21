@@ -86,9 +86,10 @@ public class DataPermissionUtils {
         }
         //如果是一般用户
         for (String roleName : roles) {
-            Criteria exists = Criteria.where(roleName).exists(true);
-            HashMap role = mongoTemplate.findOne(new Query().addCriteria(exists), HashMap.class, "roles");
-            ArrayList<String> rolePermissions = (ArrayList<String>) role.get(roleName);
+//            Criteria exists = Criteria.where(roleName).exists(true);
+            Criteria criteria = Criteria.where("is_delete").is(false).and("role_name").is(roleName);
+            HashMap role = mongoTemplate.findOne(new Query().addCriteria(criteria), HashMap.class, "roles");
+            ArrayList<String> rolePermissions = (ArrayList<String>) role.get("permissions");
             for (String rolePermission : rolePermissions) {
                 permissions.add(rolePermission);
             }
