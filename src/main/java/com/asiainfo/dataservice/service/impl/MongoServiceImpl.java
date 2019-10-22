@@ -107,7 +107,7 @@ public class MongoServiceImpl implements MongoService {
         long totalElements = mongoTemplate.count(new Query().addCriteria(criteria), long.class, collection);
         Query query = new Query();
         //分页参数
-        int pageSize = 1000;
+        int pageSize = 10;
         int start = (num - 1) * pageSize;
         query.skip(start);
         query.limit(pageSize);
@@ -124,7 +124,7 @@ public class MongoServiceImpl implements MongoService {
         //collectionName是mongodb中数据仓库的名字,应该从配置文件中获得,或者前台返回,暂时写死
         ArrayList<HashMap> list = (ArrayList<HashMap>) mongoTemplate.find(query, HashMap.class, collection);
         //封装实体页
-        EntityPage entityPage = new EntityPage();
+        EntityPage<HashMap> entityPage = new EntityPage<HashMap>();
         entityPage.setPage(num);
         entityPage.setSize(pageSize);
         entityPage.setTotalElements(totalElements);

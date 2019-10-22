@@ -1,5 +1,6 @@
 package com.asiainfo.security.service.impl;
 
+import com.asiainfo.dataservice.entity.EntityPage;
 import com.asiainfo.security.entity.criteria.PermissionMongoCriteria;
 import com.asiainfo.security.entity.criteria.RoleMongoCriteria;
 import com.asiainfo.security.entity.datapermisson.PermissionDp;
@@ -53,26 +54,39 @@ public class PermissonMongoServiceImpl implements PermissionMongoService {
      * @return java.util.List
      */
     @Override
-    public List<PermissionDp> queryAll(PermissionMongoCriteria criteria, Pageable pageable) {
+    public EntityPage<PermissionDp> queryAll(PermissionMongoCriteria criteria, Pageable pageable) {
         Query query = new Query();
+        addCriteria(criteria, query);
+        long totalElements = mongoTemplate.count(query, long.class, "permissions");
+        int num = 0;
+        int pageSize = 0;
+
         if (pageable!=null) {
             //分页参数
-            int pageSize = pageable.getPageSize();
-            int start = (pageable.getPageNumber() - 1) * pageSize;
+            pageSize = pageable.getPageSize();
+            num = pageable.getPageNumber();
+            int start = (num - 1) * pageSize;
             query.skip(start);
             query.limit(pageSize);
             //设置排序
             Sort sort = pageable.getSort();
             query.with(sort);
         }
-        addCriteria(criteria, query);
+
         List<PermissionDp> list = mongoTemplate.find(query, PermissionDp.class, "permissions");
         ArrayList<PermissionDp> permissionDps = new ArrayList<>();
         for (PermissionDp permissionDp : list) {
             permissionDp.set_id(permissionDp.get_id().toString());
             permissionDps.add(permissionDp);
         }
-        return permissionDps;
+
+        //封装实体页
+        EntityPage<PermissionDp> entityPage = new EntityPage<>();
+        entityPage.setPage(num);
+        entityPage.setSize(pageSize);
+        entityPage.setTotalElements(totalElements);
+        entityPage.setContent(permissionDps);
+        return entityPage;
     }
 
     private void addCriteria(PermissionMongoCriteria criteria, Query query) {

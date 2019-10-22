@@ -1,5 +1,6 @@
 package com.asiainfo.security.service;
 
+import com.asiainfo.dataservice.entity.EntityPage;
 import com.asiainfo.security.entity.datapermisson.UserDP;
 import com.asiainfo.security.entity.criteria.UserMongoCriteria;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +25,7 @@ public interface UserMongoService {
      * @param pageable 分页
      * @return java.util.List
      */
-    List<UserDP> queryAll(UserMongoCriteria criteria, Pageable pageable);
+    EntityPage<UserDP> queryAll(UserMongoCriteria criteria, Pageable pageable);
 
     /**
      * 插入新的用户

@@ -1,5 +1,6 @@
 package com.asiainfo.security.service;
 
+import com.asiainfo.dataservice.entity.EntityPage;
 import com.asiainfo.security.entity.datapermisson.RoleDP;
 import com.asiainfo.security.entity.datapermisson.TreeDp;
 import com.asiainfo.security.entity.criteria.RoleMongoCriteria;
@@ -25,7 +26,7 @@ public interface RoleMongoService {
      * @param pageable 分页
      * @return java.util.List
      */
-    List<RoleDP> queryAll(RoleMongoCriteria criteria, Pageable pageable);
+    EntityPage<RoleDP> queryAll(RoleMongoCriteria criteria, Pageable pageable);
 
     /**
      * 插入新的角色

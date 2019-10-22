@@ -1,5 +1,6 @@
 package com.asiainfo.security.service.impl;
 
+import com.asiainfo.dataservice.entity.EntityPage;
 import com.asiainfo.security.entity.datapermisson.RoleDP;
 import com.asiainfo.security.entity.datapermisson.UserDP;
 import com.asiainfo.security.entity.criteria.UserMongoCriteria;
@@ -57,18 +58,8 @@ public class UserMongoServiceImpl implements UserMongoService {
      * @return java.util.List
      */
     @Override
-    public List<UserDP> queryAll(UserMongoCriteria criteria, Pageable pageable) {
+    public EntityPage<UserDP> queryAll(UserMongoCriteria criteria, Pageable pageable) {
         Query query = new Query();
-        if (pageable!=null) {
-            //分页参数
-            int pageSize = pageable.getPageSize();
-            int start = (pageable.getPageNumber() - 1) * pageSize;
-            query.skip(start);
-            query.limit(pageSize);
-            //设置排序
-            Sort sort = pageable.getSort();
-            query.with(sort);
-        }
         if (criteria!= null&&!StringUtils.isEmpty(criteria.getUsername())) {
             //根据criteria获取用户名
             Pattern pattern = Pattern.compile("^.*" + criteria.getUsername() + ".*$", Pattern.CASE_INSENSITIVE);
@@ -79,6 +70,23 @@ public class UserMongoServiceImpl implements UserMongoService {
             }
             query.addCriteria(username);
         }
+
+        long totalElements = mongoTemplate.count(query, long.class, "user_dp");
+        int num = 0;
+        int pageSize = 0;
+
+        if (pageable!=null) {
+            //分页参数
+            pageSize = pageable.getPageSize();
+            num = pageable.getPageNumber();
+            int start = (num - 1) * pageSize;
+            query.skip(start);
+            query.limit(pageSize);
+            //设置排序
+            Sort sort = pageable.getSort();
+            query.with(sort);
+        }
+
         List<UserDP> list = mongoTemplate.find(query, UserDP.class, "user_dp");
         ArrayList<UserDP> users = new ArrayList<>();
         for (UserDP user : list) {
@@ -90,7 +98,14 @@ public class UserMongoServiceImpl implements UserMongoService {
             user.setDataRoles(roleDPS);
             users.add(user);
         }
-        return users;
+
+        //封装实体页
+        EntityPage<UserDP> entityPage = new EntityPage<>();
+        entityPage.setPage(num);
+        entityPage.setSize(pageSize);
+        entityPage.setTotalElements(totalElements);
+        entityPage.setContent(users);
+        return entityPage;
     }
 
     private ArrayList<Object> getRoleEntityList(List<Object> dataRoles) {

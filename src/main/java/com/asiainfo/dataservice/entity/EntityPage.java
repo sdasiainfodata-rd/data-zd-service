@@ -10,8 +10,8 @@ import java.util.List;
  * @version 2019/10/1114:37
  */
 @Data
-public class EntityPage {
-    private List<HashMap> content;
+public class EntityPage<T> {
+    private List<T> content;
     private long totalElements;
     private int size;
     private int page;

@@ -1,5 +1,6 @@
 package com.asiainfo.security.service;
 
+import com.asiainfo.dataservice.entity.EntityPage;
 import com.asiainfo.security.entity.criteria.PermissionMongoCriteria;
 import com.asiainfo.security.entity.criteria.RoleMongoCriteria;
 import com.asiainfo.security.entity.datapermisson.PermissionDp;
@@ -27,7 +28,7 @@ public interface PermissionMongoService {
      * @param pageable 分页
      * @return java.util.List
      */
-    List<PermissionDp> queryAll(PermissionMongoCriteria criteria, Pageable pageable);
+    EntityPage<PermissionDp> queryAll(PermissionMongoCriteria criteria, Pageable pageable);
 
     /**
      * 插入新的权限

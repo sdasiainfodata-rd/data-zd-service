@@ -1,5 +1,6 @@
 package com.asiainfo.security.service.impl;
 
+import com.asiainfo.dataservice.entity.EntityPage;
 import com.asiainfo.security.entity.datapermisson.PermissionDp;
 import com.asiainfo.security.entity.datapermisson.RoleDP;
 import com.asiainfo.security.entity.datapermisson.TreeDp;
@@ -58,19 +59,26 @@ public class RoleMongoServiceImpl implements RoleMongoService {
      * @return java.util.List
      */
     @Override
-    public List<RoleDP> queryAll(RoleMongoCriteria criteria, Pageable pageable) {
+    public EntityPage<RoleDP> queryAll(RoleMongoCriteria criteria, Pageable pageable) {
         Query query = new Query();
+        addCriteria(criteria, query);
+
+        long totalElements = mongoTemplate.count(query, long.class, "roles");
+        int num = 0;
+        int pageSize = 0;
+
         if (pageable!=null) {
             //分页参数
-            int pageSize = pageable.getPageSize();
-            int start = (pageable.getPageNumber() - 1) * pageSize;
+            pageSize = pageable.getPageSize();
+            num = pageable.getPageNumber();
+            int start = (num - 1) * pageSize;
             query.skip(start);
             query.limit(pageSize);
             //设置排序
             Sort sort = pageable.getSort();
             query.with(sort);
         }
-        addCriteria(criteria, query);
+
         List<RoleDP> list = mongoTemplate.find(query, RoleDP.class, "roles");
         ArrayList<RoleDP> roles = new ArrayList<>();
         for (RoleDP role : list) {
@@ -79,7 +87,14 @@ public class RoleMongoServiceImpl implements RoleMongoService {
             role.set_id(role.get_id().toString());
             roles.add(role);
         }
-        return roles;
+
+        //封装实体页
+        EntityPage<RoleDP> entityPage = new EntityPage<>();
+        entityPage.setPage(num);
+        entityPage.setSize(pageSize);
+        entityPage.setTotalElements(totalElements);
+        entityPage.setContent(roles);
+        return entityPage;
     }
 
     private ArrayList<Object> getPermissionEntiyList(List<Object> permissions) {
