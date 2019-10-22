@@ -1,5 +1,6 @@
 package com.asiainfo.security.filter;
 
+import com.asiainfo.security.entity.UserDP;
 import com.asiainfo.security.service.UserMongoService;
 import com.asiainfo.security.utils.JwtTokenUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -42,8 +43,8 @@ public class UserMongoFilter implements Filter {
             }
         }
 
-        HashMap user = userMongoService.findUserDpByName(username);
-        List<String> dataRole = (List<String>) user.get("data_roles");
+        UserDP user = userMongoService.findUserDpByName(username);
+        List<String> dataRole = (List<String>) user.getDataRoles();
         if (dataRole==null)throw  new RuntimeException("没有管理员权限...");
         if (dataRole.contains("admin")){
             doFilter(servletRequest,servletResponse ,filterChain );

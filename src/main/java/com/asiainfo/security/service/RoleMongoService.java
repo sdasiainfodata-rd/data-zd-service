@@ -1,6 +1,7 @@
 package com.asiainfo.security.service;
 
 import com.asiainfo.security.entity.RoleDP;
+import com.asiainfo.security.entity.TreeDp;
 import com.asiainfo.security.entity.UserDP;
 import com.asiainfo.security.entity.criteria.RoleMongoCriteria;
 import com.asiainfo.security.entity.criteria.UserMongoCriteria;
@@ -19,7 +20,7 @@ public interface RoleMongoService {
      * @param roleName 角色名
      * @return java.util.HashMap
      */
-    HashMap findRoleDpByName(String roleName);
+    RoleDP findRoleDpByName(String roleName);
 
     /**
      * 根据条件分页查询所有角色
@@ -27,7 +28,7 @@ public interface RoleMongoService {
      * @param pageable 分页
      * @return java.util.List
      */
-    List<HashMap> queryAll(RoleMongoCriteria criteria, Pageable pageable);
+    List<RoleDP> queryAll(RoleMongoCriteria criteria, Pageable pageable);
 
     /**
      * 插入新的角色
@@ -47,4 +48,6 @@ public interface RoleMongoService {
      * @param id
      */
     void delete(String id);
+
+    List<TreeDp> createTree(RoleMongoCriteria criteria);
 }

@@ -30,6 +30,6 @@ public class UserDP {
 //    private HashMap<String,Set<String>> collectionFeilds;
     @Field("is_delete")
     private boolean isDelete;
-    @Transient
-    private String id;
+//    @Transient
+//    private String id;
 }

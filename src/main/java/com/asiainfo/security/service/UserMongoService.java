@@ -1,5 +1,6 @@
 package com.asiainfo.security.service;
 
+import com.asiainfo.security.entity.TreeDp;
 import com.asiainfo.security.entity.UserDP;
 import com.asiainfo.security.entity.criteria.UserMongoCriteria;
 import org.springframework.data.domain.Pageable;
@@ -17,7 +18,7 @@ public interface UserMongoService {
      * @param username 用户名
      * @return java.util.HashMap
      */
-    HashMap findUserDpByName(String username);
+    UserDP findUserDpByName(String username);
 
     /**
      * 根据条件分页查询所有用户
@@ -25,7 +26,7 @@ public interface UserMongoService {
      * @param pageable 分页
      * @return java.util.List
      */
-    List<HashMap> queryAll(UserMongoCriteria criteria, Pageable pageable);
+    List<UserDP> queryAll(UserMongoCriteria criteria, Pageable pageable);
 
     /**
      * 插入新的用户
@@ -45,4 +46,6 @@ public interface UserMongoService {
      * @param id
      */
     void delete(String id);
+
+
 }

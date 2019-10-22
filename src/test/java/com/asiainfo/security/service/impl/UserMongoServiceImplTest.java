@@ -31,18 +31,18 @@ public class UserMongoServiceImplTest {
 
     @Test
     public void queryAll() {
-        UserMongoCriteria userMongoCriteria = new UserMongoCriteria();
-
-        List<HashMap> list = userMongoService.queryAll(null, null);
-        for (HashMap map : list) {
-            System.out.println(map);
-        }
+//        UserMongoCriteria userMongoCriteria = new UserMongoCriteria();
+//
+//        List<HashMap> list = userMongoService.queryAll(null, null);
+//        for (HashMap map : list) {
+//            System.out.println(map);
+//        }
     }
 
     @Test
     public void findUserDpByName1() {
-        HashMap user1 = userMongoService.findUserDpByName("user1");
-        System.out.println(user1);
+//        HashMap user1 = userMongoService.findUserDpByName("user1");
+//        System.out.println(user1);
     }
 
     @Test

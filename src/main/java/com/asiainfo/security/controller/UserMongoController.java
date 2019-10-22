@@ -1,12 +1,14 @@
 package com.asiainfo.security.controller;
 
 import com.asiainfo.security.entity.UserDP;
+import com.asiainfo.security.entity.criteria.RoleMongoCriteria;
 import com.asiainfo.security.entity.criteria.UserMongoCriteria;
 import com.asiainfo.security.service.UserMongoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -14,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
  * @version 2019/10/1213:56
  */
 @RestController
-//@RequestMapping("api")
+@RequestMapping("admin")
 public class UserMongoController {
     @Autowired
     private UserMongoService userMongoService;
@@ -33,12 +35,17 @@ public class UserMongoController {
 //    ("新增用户")
     @PostMapping(value = "/users")
     public ResponseEntity create(@RequestBody UserDP resources){
+        if (resources == null|| StringUtils.isEmpty(resources.getUsername()))
+            throw new RuntimeException("用户名不能为空...");
         return new ResponseEntity(userMongoService.create(resources),HttpStatus.CREATED);
     }
 
 //    ("修改用户")
     @PutMapping(value = "/users")
     public ResponseEntity update(@RequestBody UserDP resources){
+        if (resources == null|| StringUtils.isEmpty(resources.getUsername()))
+            throw new RuntimeException("用户名不能为空...");
+        if (StringUtils.isEmpty(resources.get_id())) throw new RuntimeException("没有用户数据中台id...");
         userMongoService.update(resources);
         return new ResponseEntity(HttpStatus.OK);
     }
@@ -46,6 +53,7 @@ public class UserMongoController {
 //    ("删除用户")
     @DeleteMapping(value = "/users/{id}")
     public ResponseEntity delete(@PathVariable String id){
+        if (StringUtils.isEmpty(id))throw new RuntimeException("不存在该用户id值...");
         userMongoService.delete(id);
         return new ResponseEntity(HttpStatus.OK);
     }

@@ -1,5 +1,7 @@
 package com.asiainfo.security.service.impl;
 
+import com.asiainfo.security.entity.RoleDP;
+import com.asiainfo.security.entity.TreeDp;
 import com.asiainfo.security.entity.UserDP;
 import com.asiainfo.security.entity.criteria.UserMongoCriteria;
 import com.asiainfo.security.service.UserMongoService;
@@ -33,12 +35,12 @@ public class UserMongoServiceImpl implements UserMongoService {
      * @return java.util.HashMap
      */
     @Override
-    public HashMap findUserDpByName(String username){
+    public UserDP findUserDpByName(String username){
         Query query = new Query();
         Criteria criteria = Criteria.where("is_delete").is(false).and("username").is(username);
         query.addCriteria(criteria);
-        HashMap userDp = mongoTemplate.findOne(query, HashMap.class, "user_dp");
-        userDp.put("id",userDp.get("_id").toString() );
+        UserDP userDp = mongoTemplate.findOne(query, UserDP.class, "user_dp");
+        if (userDp!=null) userDp.set_id(userDp.get_id().toString());//无视警告,可能为空
         return userDp;
     }
 
@@ -49,7 +51,7 @@ public class UserMongoServiceImpl implements UserMongoService {
      * @return java.util.List
      */
     @Override
-    public List<HashMap> queryAll(UserMongoCriteria criteria, Pageable pageable) {
+    public List<UserDP> queryAll(UserMongoCriteria criteria, Pageable pageable) {
         Query query = new Query();
         if (pageable!=null) {
             //分页参数
@@ -71,12 +73,11 @@ public class UserMongoServiceImpl implements UserMongoService {
             }
             query.addCriteria(username);
         }
-        List<HashMap> list = mongoTemplate.find(query, HashMap.class, "user_dp");
-        ArrayList<HashMap> users = new ArrayList<>();
-        for (HashMap map : list) {
-            String _id = map.get("_id").toString();
-            map.put("id",_id );
-            users.add(map);
+        List<UserDP> list = mongoTemplate.find(query, UserDP.class, "user_dp");
+        ArrayList<UserDP> users = new ArrayList<>();
+        for (UserDP user : list) {
+            user.set_id(user.get_id().toString());
+            users.add(user);
         }
         return users;
     }
@@ -88,9 +89,7 @@ public class UserMongoServiceImpl implements UserMongoService {
      */
     @Override
     public UserDP create(UserDP resources) {
-        if (resources == null|| StringUtils.isEmpty(resources.getUsername()))
-            throw new RuntimeException("用户名不能为空...");
-        HashMap user = findUserDpByName(resources.getUsername());
+        UserDP user = findUserDpByName(resources.getUsername());
         if (user!=null) throw new RuntimeException("已存在该用户...");
         resources.setCreateTime(new Date());
         resources.setLastUpdateTime(new Date());
@@ -103,12 +102,8 @@ public class UserMongoServiceImpl implements UserMongoService {
      */
     @Override
     public void update(UserDP resources) {
-        if (resources == null||StringUtils.isEmpty(resources.getUsername()))
-            throw new RuntimeException("用户名不能为空...");
-        if (StringUtils.isEmpty(resources.getId())) throw new RuntimeException("没有用户数据中台id...");
-        HashMap user = mongoTemplate.findById(resources.getId(),HashMap.class ,"user_dp");
+        HashMap user = mongoTemplate.findById(resources.get_id(),HashMap.class ,"user_dp");
         if (user==null) throw new RuntimeException("不存在该用户...");
-        resources.set_id(user.get("_id").toString());
         resources.setCreateTime((Date) user.get("create_time"));
         resources.setLastUpdateTime(new Date());
         mongoTemplate.save(resources,"user_dp" );
@@ -120,11 +115,12 @@ public class UserMongoServiceImpl implements UserMongoService {
      */
     @Override
     public void delete(String id) {
-        if (StringUtils.isEmpty(id))throw new RuntimeException("不存在该用户id值...");
         UserDP userDP = mongoTemplate.findById(id, UserDP.class);
         if (userDP==null)throw new RuntimeException("不存在该用户id值...");
         userDP.setDelete(true);
         mongoTemplate.save(userDP,"user_dp" );
     }
+
+
 
 }
