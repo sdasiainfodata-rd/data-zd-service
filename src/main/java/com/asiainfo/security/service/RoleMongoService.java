@@ -1,13 +1,10 @@
 package com.asiainfo.security.service;
 
-import com.asiainfo.security.entity.RoleDP;
-import com.asiainfo.security.entity.TreeDp;
-import com.asiainfo.security.entity.UserDP;
+import com.asiainfo.security.entity.datapermisson.RoleDP;
+import com.asiainfo.security.entity.datapermisson.TreeDp;
 import com.asiainfo.security.entity.criteria.RoleMongoCriteria;
-import com.asiainfo.security.entity.criteria.UserMongoCriteria;
 import org.springframework.data.domain.Pageable;
 
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -33,7 +30,7 @@ public interface RoleMongoService {
     /**
      * 插入新的角色
      * @param resources 角色
-     * @return com.asiainfo.security.entity.UserDP
+     * @return com.asiainfo.security.entity.datapermisson.UserDP
      */
     RoleDP create(RoleDP resources);
 

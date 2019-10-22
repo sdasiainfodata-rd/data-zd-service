@@ -1,6 +1,6 @@
 package com.asiainfo.security.mapper;
 
-import com.asiainfo.security.entity.User;
+import com.asiainfo.security.entity.permission.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;

@@ -1,6 +1,6 @@
 package com.asiainfo.security.utils;
 
-import com.asiainfo.security.entity.User;
+import com.asiainfo.security.entity.permission.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Clock;
 import io.jsonwebtoken.Jwts;

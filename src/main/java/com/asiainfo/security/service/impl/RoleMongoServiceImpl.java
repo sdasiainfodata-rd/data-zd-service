@@ -1,12 +1,11 @@
 package com.asiainfo.security.service.impl;
 
-import com.asiainfo.security.entity.RoleDP;
-import com.asiainfo.security.entity.TreeDp;
-import com.asiainfo.security.entity.UserDP;
+import com.asiainfo.security.entity.datapermisson.PermissionDp;
+import com.asiainfo.security.entity.datapermisson.RoleDP;
+import com.asiainfo.security.entity.datapermisson.TreeDp;
 import com.asiainfo.security.entity.criteria.RoleMongoCriteria;
-import com.asiainfo.security.entity.criteria.UserMongoCriteria;
+import com.asiainfo.security.service.PermissionMongoService;
 import com.asiainfo.security.service.RoleMongoService;
-import com.asiainfo.security.service.UserMongoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -14,6 +13,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -30,6 +30,8 @@ import java.util.regex.Pattern;
 public class RoleMongoServiceImpl implements RoleMongoService {
     @Autowired
     private MongoTemplate mongoTemplate;
+    @Autowired
+    private PermissionMongoService permissionMongoService;
 
     /**
      * 根据角色名查询可用的角色
@@ -42,7 +44,10 @@ public class RoleMongoServiceImpl implements RoleMongoService {
         Criteria criteria = Criteria.where("is_delete").is(false).and("role_name").is(rolename);
         query.addCriteria(criteria);
         RoleDP role = mongoTemplate.findOne(query, RoleDP.class, "roles");
-        if (role!=null) role.set_id(role.get_id().toString());
+        if (role!=null) {
+            role.set_id(role.get_id().toString());
+            role.setPermissions(getPermissionEntiyList(role.getPermissions()));
+        }
         return role;
     }
 
@@ -69,10 +74,23 @@ public class RoleMongoServiceImpl implements RoleMongoService {
         List<RoleDP> list = mongoTemplate.find(query, RoleDP.class, "roles");
         ArrayList<RoleDP> roles = new ArrayList<>();
         for (RoleDP role : list) {
+            List<Object> permissions = role.getPermissions();
+            role.setPermissions(getPermissionEntiyList(permissions));
             role.set_id(role.get_id().toString());
             roles.add(role);
         }
         return roles;
+    }
+
+    private ArrayList<Object> getPermissionEntiyList(List<Object> permissions) {
+        if (CollectionUtils.isEmpty(permissions)) return null;
+        ArrayList<Object> permissionDps = new ArrayList<>();
+        for (Object permission : permissions) {
+            String permissionName = (String) permission;
+            PermissionDp permissionDp = permissionMongoService.findPermissionDpByName(permissionName);
+            permissionDps.add(permissionDp);
+        }
+        return permissionDps;
     }
 
     private void addCriteria(RoleMongoCriteria criteria, Query query) {
@@ -91,7 +109,7 @@ public class RoleMongoServiceImpl implements RoleMongoService {
     /**
      * 插入新的角色
      * @param resources 角色
-     * @return com.asiainfo.security.entity.UserDP
+     * @return com.asiainfo.security.entity.datapermisson.UserDP
      */
     @Override
     public RoleDP create(RoleDP resources) {

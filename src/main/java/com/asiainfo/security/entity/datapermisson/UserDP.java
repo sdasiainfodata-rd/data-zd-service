@@ -1,4 +1,4 @@
-package com.asiainfo.security.entity;
+package com.asiainfo.security.entity.datapermisson;
 
 import lombok.Data;
 import org.springframework.data.annotation.Transient;
@@ -25,7 +25,7 @@ public class UserDP {
     @Field("last_update_time")
     private Date lastUpdateTime; // datetime DEFAULT NULL COMMENT '最后更能日期',
     @Field("data_roles")
-    private List<String> dataRoles;
+    private List<Object> dataRoles;
 //    @Field("collection_feilds")
 //    private HashMap<String,Set<String>> collectionFeilds;
     @Field("is_delete")

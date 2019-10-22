@@ -1,9 +1,9 @@
 package com.asiainfo.security.service.impl;
 
-import com.asiainfo.security.entity.RoleDP;
-import com.asiainfo.security.entity.TreeDp;
-import com.asiainfo.security.entity.UserDP;
+import com.asiainfo.security.entity.datapermisson.RoleDP;
+import com.asiainfo.security.entity.datapermisson.UserDP;
 import com.asiainfo.security.entity.criteria.UserMongoCriteria;
+import com.asiainfo.security.service.RoleMongoService;
 import com.asiainfo.security.service.UserMongoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -28,6 +29,8 @@ import java.util.regex.Pattern;
 public class UserMongoServiceImpl implements UserMongoService {
     @Autowired
     private MongoTemplate mongoTemplate;
+    @Autowired
+    private RoleMongoService roleMongoService;
 
     /**
      * 根据用户名查询可用的用户
@@ -40,7 +43,10 @@ public class UserMongoServiceImpl implements UserMongoService {
         Criteria criteria = Criteria.where("is_delete").is(false).and("username").is(username);
         query.addCriteria(criteria);
         UserDP userDp = mongoTemplate.findOne(query, UserDP.class, "user_dp");
-        if (userDp!=null) userDp.set_id(userDp.get_id().toString());//无视警告,可能为空
+        if (userDp!=null) {
+            userDp.set_id(userDp.get_id().toString());//无视警告,可能为空
+            userDp.setDataRoles(getRoleEntityList(userDp.getDataRoles()));
+        }
         return userDp;
     }
 
@@ -77,15 +83,32 @@ public class UserMongoServiceImpl implements UserMongoService {
         ArrayList<UserDP> users = new ArrayList<>();
         for (UserDP user : list) {
             user.set_id(user.get_id().toString());
+
+            List<Object> dataRoles = user.getDataRoles();
+            ArrayList<Object> roleDPS = getRoleEntityList(dataRoles);
+            if (roleDPS == null) continue;
+            user.setDataRoles(roleDPS);
             users.add(user);
         }
         return users;
     }
 
+    private ArrayList<Object> getRoleEntityList(List<Object> dataRoles) {
+        if (CollectionUtils.isEmpty(dataRoles)) return null;
+        ArrayList<Object> roleDPS = new ArrayList<>();
+        if (dataRoles == null) return null;
+        for (Object dataRole : dataRoles) {
+            String roleName = (String) dataRole;
+            RoleDP role = roleMongoService.findRoleDpByName(roleName);
+            roleDPS.add(role);
+        }
+        return roleDPS;
+    }
+
     /**
      * 插入新的用户
      * @param resources 用户
-     * @return com.asiainfo.security.entity.UserDP
+     * @return com.asiainfo.security.entity.datapermisson.UserDP
      */
     @Override
     public UserDP create(UserDP resources) {

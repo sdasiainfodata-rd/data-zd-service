@@ -1,11 +1,8 @@
 package com.asiainfo.security.controller;
 
-import com.asiainfo.security.entity.RoleDP;
-import com.asiainfo.security.entity.UserDP;
+import com.asiainfo.security.entity.datapermisson.RoleDP;
 import com.asiainfo.security.entity.criteria.RoleMongoCriteria;
-import com.asiainfo.security.entity.criteria.UserMongoCriteria;
 import com.asiainfo.security.service.RoleMongoService;
-import com.asiainfo.security.service.UserMongoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -24,13 +21,13 @@ public class RoleMongoController {
     private RoleMongoService roleMongoService;
 
     @GetMapping("/roles/{roleName}")
-    public ResponseEntity getUserDp(@PathVariable("roleName")String roleName){
+    public ResponseEntity getRoleDp(@PathVariable("roleName")String roleName){
         return new ResponseEntity(roleMongoService.findRoleDpByName(roleName),HttpStatus.OK);
     }
 
 //    ("查询角色")
     @GetMapping(value = "/roles")
-    public ResponseEntity getUsers(RoleMongoCriteria criteria, Pageable pageable){
+    public ResponseEntity getRoles(RoleMongoCriteria criteria, Pageable pageable){
         return new ResponseEntity(roleMongoService.queryAll(criteria,pageable ),HttpStatus.OK);
     }
 
@@ -61,7 +58,7 @@ public class RoleMongoController {
 
 
 
-    //    ("删除用户")
+    //    ("创建角色树")
     @GetMapping(value = "/roles/tree")
     public ResponseEntity createTree(RoleMongoCriteria criteria){
         return new ResponseEntity(roleMongoService.createTree(criteria),HttpStatus.OK);

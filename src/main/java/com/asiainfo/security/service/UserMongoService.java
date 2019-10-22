@@ -1,11 +1,9 @@
 package com.asiainfo.security.service;
 
-import com.asiainfo.security.entity.TreeDp;
-import com.asiainfo.security.entity.UserDP;
+import com.asiainfo.security.entity.datapermisson.UserDP;
 import com.asiainfo.security.entity.criteria.UserMongoCriteria;
 import org.springframework.data.domain.Pageable;
 
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -31,7 +29,7 @@ public interface UserMongoService {
     /**
      * 插入新的用户
      * @param resources 用户
-     * @return com.asiainfo.security.entity.UserDP
+     * @return com.asiainfo.security.entity.datapermisson.UserDP
      */
     UserDP create(UserDP resources);
 

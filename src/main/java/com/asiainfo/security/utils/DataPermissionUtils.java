@@ -1,6 +1,6 @@
 package com.asiainfo.security.utils;
 
-import com.asiainfo.security.entity.UserDP;
+import com.asiainfo.security.entity.datapermisson.UserDP;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -50,7 +50,7 @@ public class DataPermissionUtils {
     /**
      * 通过用户名查询mongodb中相应的用户数据权限数据
      * @param username 用户名
-     * @return com.asiainfo.security.entity.UserDP
+     * @return com.asiainfo.security.entity.datapermisson.UserDP
      */
     public UserDP getUserDP(String username) {
         Query query = new Query();
@@ -65,7 +65,7 @@ public class DataPermissionUtils {
      * @param username 用户名
      * @return java.util.Set
      */
-    private List<String> getDataRoles(String username){
+    private List<Object> getDataRoles(String username){
         UserDP user = getUserDP(username);
         if (user == null) return null;
         return user.getDataRoles();
@@ -76,7 +76,7 @@ public class DataPermissionUtils {
      * @param roles 角色集合
      * @return java.util.HashSet
      */
-    private HashSet<String> getPermissionFromRoles(List<String> roles){
+    private HashSet<String> getPermissionFromRoles(List<Object> roles){
         if (CollectionUtils.isEmpty(roles)) return null;
         HashSet<String> permissions = new HashSet<>();
         //判断管理员权限
@@ -85,7 +85,7 @@ public class DataPermissionUtils {
             return permissions;
         }
         //如果是一般用户
-        for (String roleName : roles) {
+        for (Object roleName : roles) {
 //            Criteria exists = Criteria.where(roleName).exists(true);
             Criteria criteria = Criteria.where("is_delete").is(false).and("role_name").is(roleName);
             HashMap role = mongoTemplate.findOne(new Query().addCriteria(criteria), HashMap.class, "roles");
@@ -103,7 +103,7 @@ public class DataPermissionUtils {
      * @return java.util.HashSet
      */
     private HashSet<String> getPermissionsFromUsername(String username){
-        List<String> dataRoles = getDataRoles(username);
+        List<Object> dataRoles = getDataRoles(username);
         return getPermissionFromRoles(dataRoles);
     }
 }

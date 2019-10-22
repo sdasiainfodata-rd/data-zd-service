@@ -1,6 +1,6 @@
 package com.asiainfo.security.utils;
 
-import com.asiainfo.security.entity.UserDP;
+import com.asiainfo.security.entity.datapermisson.UserDP;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,18 +31,18 @@ public class DataPermissionUtilsTest {
 
     @Test
     public void creatUser() {
-        UserDP userDP = new UserDP();
-        userDP.setCreateTime(new Date());
-        userDP.setLastUpdateTime(new Date());
-        userDP.setUsername("user2");
-//        userDP.setDataRoles("admin");
-        ArrayList<String> roles = new ArrayList<>();
-        roles.add("role1");
-        roles.add("role2");
-
-
-        userDP.setDataRoles(roles);
-        mongoTemplate.save(userDP,"user_dp");
+//        UserDP userDP = new UserDP();
+//        userDP.setCreateTime(new Date());
+//        userDP.setLastUpdateTime(new Date());
+//        userDP.setUsername("user2");
+////        userDP.setDataRoles("admin");
+//        ArrayList<String> roles = new ArrayList<>();
+//        roles.add("role1");
+//        roles.add("role2");
+//
+//
+//        userDP.setDataRoles(roles);
+//        mongoTemplate.save(userDP,"user_dp");
     }
 
     @Test

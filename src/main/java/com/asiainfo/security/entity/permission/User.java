@@ -1,4 +1,4 @@
-package com.asiainfo.security.entity;
+package com.asiainfo.security.entity.permission;
 
 import lombok.Data;
 

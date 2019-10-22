@@ -1,7 +1,6 @@
 package com.asiainfo.security.controller;
 
-import com.asiainfo.security.entity.UserDP;
-import com.asiainfo.security.entity.criteria.RoleMongoCriteria;
+import com.asiainfo.security.entity.datapermisson.UserDP;
 import com.asiainfo.security.entity.criteria.UserMongoCriteria;
 import com.asiainfo.security.service.UserMongoService;
 import org.springframework.beans.factory.annotation.Autowired;

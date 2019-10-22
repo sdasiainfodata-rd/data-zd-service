@@ -1,17 +1,14 @@
 package com.asiainfo.security.filter;
 
-import com.asiainfo.security.entity.UserDP;
+import com.asiainfo.security.entity.datapermisson.UserDP;
 import com.asiainfo.security.service.UserMongoService;
 import com.asiainfo.security.utils.JwtTokenUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -44,7 +41,7 @@ public class UserMongoFilter implements Filter {
         }
 
         UserDP user = userMongoService.findUserDpByName(username);
-        List<String> dataRole = (List<String>) user.getDataRoles();
+        List<Object> dataRole = (List<Object>) user.getDataRoles();
         if (dataRole==null)throw  new RuntimeException("没有管理员权限...");
         if (dataRole.contains("admin")){
             doFilter(servletRequest,servletResponse ,filterChain );
