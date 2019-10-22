@@ -1,6 +1,7 @@
 package com.asiainfo.security.service.impl;
 
 import com.asiainfo.security.entity.RoleDP;
+import com.asiainfo.security.entity.TreeDp;
 import com.asiainfo.security.entity.UserDP;
 import com.asiainfo.security.entity.criteria.RoleMongoCriteria;
 import com.asiainfo.security.entity.criteria.UserMongoCriteria;
@@ -36,11 +37,13 @@ public class RoleMongoServiceImpl implements RoleMongoService {
      * @return java.util.HashMap
      */
     @Override
-    public HashMap findRoleDpByName(String rolename){
+    public RoleDP findRoleDpByName(String rolename){
         Query query = new Query();
         Criteria criteria = Criteria.where("is_delete").is(false).and("role_name").is(rolename);
         query.addCriteria(criteria);
-        return mongoTemplate.findOne(query,HashMap.class ,"roles" );
+        RoleDP role = mongoTemplate.findOne(query, RoleDP.class, "roles");
+        if (role!=null) role.set_id(role.get_id().toString());
+        return role;
     }
 
     /**
@@ -50,7 +53,7 @@ public class RoleMongoServiceImpl implements RoleMongoService {
      * @return java.util.List
      */
     @Override
-    public List<HashMap> queryAll(RoleMongoCriteria criteria, Pageable pageable) {
+    public List<RoleDP> queryAll(RoleMongoCriteria criteria, Pageable pageable) {
         Query query = new Query();
         if (pageable!=null) {
             //分页参数
@@ -62,6 +65,17 @@ public class RoleMongoServiceImpl implements RoleMongoService {
             Sort sort = pageable.getSort();
             query.with(sort);
         }
+        addCriteria(criteria, query);
+        List<RoleDP> list = mongoTemplate.find(query, RoleDP.class, "roles");
+        ArrayList<RoleDP> roles = new ArrayList<>();
+        for (RoleDP role : list) {
+            role.set_id(role.get_id().toString());
+            roles.add(role);
+        }
+        return roles;
+    }
+
+    private void addCriteria(RoleMongoCriteria criteria, Query query) {
         if (criteria!= null&&!StringUtils.isEmpty(criteria.getRoleName())) {
             //根据criteria获取角色名
             Pattern pattern = Pattern.compile("^.*" + criteria.getRoleName() + ".*$", Pattern.CASE_INSENSITIVE);
@@ -72,14 +86,6 @@ public class RoleMongoServiceImpl implements RoleMongoService {
             }
             query.addCriteria(roleName);
         }
-        List<HashMap> list = mongoTemplate.find(query, HashMap.class, "roles");
-        ArrayList<HashMap> roles = new ArrayList<>();
-        for (HashMap map : list) {
-            String _id = map.get("_id").toString();
-            map.put("id",_id );
-            roles.add(map);
-        }
-        return roles;
     }
 
     /**
@@ -89,9 +95,7 @@ public class RoleMongoServiceImpl implements RoleMongoService {
      */
     @Override
     public RoleDP create(RoleDP resources) {
-        if (resources == null|| StringUtils.isEmpty(resources.getRoleName()))
-            throw new RuntimeException("角色名不能为空...");
-        HashMap role = findRoleDpByName(resources.getRoleName());
+        RoleDP role = findRoleDpByName(resources.getRoleName());
         if (role!=null) throw new RuntimeException("已存在该角色...");
         resources.setCreateTime(new Date());
         resources.setLastUpdateTime(new Date());
@@ -104,11 +108,9 @@ public class RoleMongoServiceImpl implements RoleMongoService {
      */
     @Override
     public void update(RoleDP resources) {
-        if (resources == null||StringUtils.isEmpty(resources.getRoleName()))
-            throw new RuntimeException("角色名不能为空...");
-        HashMap role = mongoTemplate.findById(resources.getId(),HashMap.class,"roles" );
+        HashMap role = mongoTemplate.findById(resources.get_id(),HashMap.class,"roles" );
         if (role==null) throw new RuntimeException("不存在该角色...");
-        resources.set_id(role.get("_id").toString());
+//        resources.set_id(role.get("_id").toString());
         resources.setCreateTime((Date) role.get("create_time"));
         resources.setLastUpdateTime(new Date());
         mongoTemplate.save(resources,"roles" );
@@ -120,11 +122,27 @@ public class RoleMongoServiceImpl implements RoleMongoService {
      */
     @Override
     public void delete(String id) {
-        if (StringUtils.isEmpty(id))throw new RuntimeException("不存在该角色id值...");
         RoleDP roleDP = mongoTemplate.findById(id, RoleDP.class);
         if (roleDP==null)throw new RuntimeException("不存在该角色id值...");
         roleDP.setDelete(true);
         mongoTemplate.save(roleDP,"roles" );
+    }
+
+    @Override
+    public List<TreeDp> createTree(RoleMongoCriteria criteria) {
+        Query query = new Query().addCriteria(Criteria.where("is_delete").is(false));
+        addCriteria(criteria,query );
+        List<RoleDP> roleDPS = mongoTemplate.find(query,
+                RoleDP.class, "roles");
+        ArrayList<TreeDp> treeDps = new ArrayList<>();
+        for (RoleDP roleDP : roleDPS) {
+            TreeDp treeDp = new TreeDp();
+            treeDp.setId(roleDP.get_id().toString());
+            treeDp.setLabel(roleDP.getRoleName());
+            treeDps.add(treeDp);
+        }
+
+        return treeDps;
     }
 
 }
