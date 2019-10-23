@@ -52,7 +52,7 @@ public class DataPermissionUtils {
      * @param username 用户名
      * @return com.asiainfo.security.entity.datapermisson.UserDP
      */
-    public UserDP getUserDP(String username) {
+    private UserDP getUserDP(String username) {
         Query query = new Query();
         Criteria criteria = Criteria.where("is_delete").is(false).and("data_roles").exists(true)
                 .and("username").is(username);
@@ -67,6 +67,7 @@ public class DataPermissionUtils {
      */
     private List<Object> getDataRoles(String username){
         UserDP user = getUserDP(username);
+        //noinspection ConstantConditions
         if (user == null) return null;
         return user.getDataRoles();
     }
@@ -89,10 +90,9 @@ public class DataPermissionUtils {
 //            Criteria exists = Criteria.where(roleName).exists(true);
             Criteria criteria = Criteria.where("is_delete").is(false).and("role_name").is(roleName);
             HashMap role = mongoTemplate.findOne(new Query().addCriteria(criteria), HashMap.class, "roles");
+            //noinspection unchecked
             ArrayList<String> rolePermissions = (ArrayList<String>) role.get("permissions");
-            for (String rolePermission : rolePermissions) {
-                permissions.add(rolePermission);
-            }
+            permissions.addAll(rolePermissions);
         }
         return permissions;
     }

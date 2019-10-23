@@ -2,9 +2,7 @@ package com.asiainfo.security.service;
 
 import com.asiainfo.dataservice.entity.EntityPage;
 import com.asiainfo.security.entity.criteria.PermissionMongoCriteria;
-import com.asiainfo.security.entity.criteria.RoleMongoCriteria;
 import com.asiainfo.security.entity.datapermisson.PermissionDp;
-import com.asiainfo.security.entity.datapermisson.RoleDP;
 import com.asiainfo.security.entity.datapermisson.TreeDp;
 import org.springframework.data.domain.Pageable;
 
@@ -45,7 +43,7 @@ public interface PermissionMongoService {
 
     /**
      * 删除权限,实际是将enable设为false,并非真正从数据库删除权限
-     * @param id
+     * @param id 权限id
      */
     void delete(String id);
 

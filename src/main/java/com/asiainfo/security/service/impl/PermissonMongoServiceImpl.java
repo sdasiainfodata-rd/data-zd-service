@@ -2,15 +2,12 @@ package com.asiainfo.security.service.impl;
 
 import com.asiainfo.dataservice.entity.EntityPage;
 import com.asiainfo.security.entity.criteria.PermissionMongoCriteria;
-import com.asiainfo.security.entity.criteria.RoleMongoCriteria;
 import com.asiainfo.security.entity.datapermisson.PermissionDp;
-import com.asiainfo.security.entity.datapermisson.RoleDP;
 import com.asiainfo.security.entity.datapermisson.TreeDp;
 import com.asiainfo.security.service.PermissionMongoService;
-import com.asiainfo.security.service.RoleMongoService;
+import com.asiainfo.security.utils.CommenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -42,9 +39,9 @@ public class PermissonMongoServiceImpl implements PermissionMongoService {
         Query query = new Query();
         Criteria criteria = Criteria.where("is_delete").is(false).and("permission_name").is(permissionName);
         query.addCriteria(criteria);
-        PermissionDp permissionDp = mongoTemplate.findOne(query, PermissionDp.class, "permissions");
-        if (permissionDp!=null) permissionDp.set_id(permissionDp.get_id().toString());
-        return permissionDp;
+        return mongoTemplate.findOne(query, PermissionDp.class, "permissions");
+//        if (permissionDp!=null) permissionDp.set_id(permissionDp.get_id().toString());
+//        return permissionDp;
     }
 
     /**
@@ -65,29 +62,25 @@ public class PermissonMongoServiceImpl implements PermissionMongoService {
             //分页参数
             pageSize = pageable.getPageSize();
             num = pageable.getPageNumber();
-            int start = (num - 1) * pageSize;
-            query.skip(start);
-            query.limit(pageSize);
-            //设置排序
-            Sort sort = pageable.getSort();
-            query.with(sort);
+            CommenUtils.addPageCriteria(pageable, query, num, pageSize);
         }
 
         List<PermissionDp> list = mongoTemplate.find(query, PermissionDp.class, "permissions");
-        ArrayList<PermissionDp> permissionDps = new ArrayList<>();
-        for (PermissionDp permissionDp : list) {
-            permissionDp.set_id(permissionDp.get_id().toString());
-            permissionDps.add(permissionDp);
-        }
+//        ArrayList<PermissionDp> permissionDps = new ArrayList<>();
+//        for (PermissionDp permissionDp : list) {
+////            permissionDp.set_id(permissionDp.get_id().toString());
+//            permissionDps.add(permissionDp);
+//        }
 
         //封装实体页
         EntityPage<PermissionDp> entityPage = new EntityPage<>();
         entityPage.setPage(num);
         entityPage.setSize(pageSize);
         entityPage.setTotalElements(totalElements);
-        entityPage.setContent(permissionDps);
+        entityPage.setContent(list);
         return entityPage;
     }
+
 
     private void addCriteria(PermissionMongoCriteria criteria, Query query) {
         if (criteria!= null&&!StringUtils.isEmpty(criteria.getPermissionName())) {
@@ -128,7 +121,7 @@ public class PermissonMongoServiceImpl implements PermissionMongoService {
 
     /**
      * 删除角色,实际是将enable设为false,并非真正从数据库删除角色
-     * @param id
+     * @param id 权限id
      */
     @Override
     public void delete(String id) {
@@ -147,11 +140,10 @@ public class PermissonMongoServiceImpl implements PermissionMongoService {
         ArrayList<TreeDp> treeDps = new ArrayList<>();
         for (PermissionDp permissionDp : permissionDps) {
             TreeDp treeDp = new TreeDp();
-            treeDp.setId(permissionDp.get_id().toString());
+            treeDp.setId(permissionDp.get_id());
             treeDp.setLabel(permissionDp.getPermissionName());
             treeDps.add(treeDp);
         }
         return treeDps;
     }
-
 }

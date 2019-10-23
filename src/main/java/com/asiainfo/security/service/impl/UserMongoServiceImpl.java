@@ -1,14 +1,14 @@
 package com.asiainfo.security.service.impl;
 
 import com.asiainfo.dataservice.entity.EntityPage;
+import com.asiainfo.security.entity.criteria.UserMongoCriteria;
 import com.asiainfo.security.entity.datapermisson.RoleDP;
 import com.asiainfo.security.entity.datapermisson.UserDP;
-import com.asiainfo.security.entity.criteria.UserMongoCriteria;
 import com.asiainfo.security.service.RoleMongoService;
 import com.asiainfo.security.service.UserMongoService;
+import com.asiainfo.security.utils.CommenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -44,10 +44,7 @@ public class UserMongoServiceImpl implements UserMongoService {
         Criteria criteria = Criteria.where("is_delete").is(false).and("username").is(username);
         query.addCriteria(criteria);
         UserDP userDp = mongoTemplate.findOne(query, UserDP.class, "user_dp");
-        if (userDp!=null) {
-            userDp.set_id(userDp.get_id().toString());//无视警告,可能为空
-            userDp.setDataRoles(getRoleEntityList(userDp.getDataRoles()));
-        }
+        if (userDp!=null) userDp.setDataRoles(getRoleEntityList(userDp.getDataRoles()));
         return userDp;
     }
 
@@ -79,24 +76,19 @@ public class UserMongoServiceImpl implements UserMongoService {
             //分页参数
             pageSize = pageable.getPageSize();
             num = pageable.getPageNumber();
-            int start = (num - 1) * pageSize;
-            query.skip(start);
-            query.limit(pageSize);
-            //设置排序
-            Sort sort = pageable.getSort();
-            query.with(sort);
+            CommenUtils.addPageCriteria(pageable, query, num, pageSize);
         }
 
         List<UserDP> list = mongoTemplate.find(query, UserDP.class, "user_dp");
-        ArrayList<UserDP> users = new ArrayList<>();
+//        ArrayList<UserDP> users = new ArrayList<>();
         for (UserDP user : list) {
-            user.set_id(user.get_id().toString());
+//            user.set_id(user.get_id().toString());
 
             List<Object> dataRoles = user.getDataRoles();
             ArrayList<Object> roleDPS = getRoleEntityList(dataRoles);
             if (roleDPS == null) continue;
             user.setDataRoles(roleDPS);
-            users.add(user);
+//            users.add(user);
         }
 
         //封装实体页
@@ -104,9 +96,10 @@ public class UserMongoServiceImpl implements UserMongoService {
         entityPage.setPage(num);
         entityPage.setSize(pageSize);
         entityPage.setTotalElements(totalElements);
-        entityPage.setContent(users);
+        entityPage.setContent(list);
         return entityPage;
     }
+
 
     private ArrayList<Object> getRoleEntityList(List<Object> dataRoles) {
         if (CollectionUtils.isEmpty(dataRoles)) return null;
@@ -149,7 +142,7 @@ public class UserMongoServiceImpl implements UserMongoService {
 
     /**
      * 删除用户,实际是将enable设为false,并非真正从数据库删除用户
-     * @param id
+     * @param id 用户id
      */
     @Override
     public void delete(String id) {
@@ -158,7 +151,4 @@ public class UserMongoServiceImpl implements UserMongoService {
         userDP.setDelete(true);
         mongoTemplate.save(userDP,"user_dp" );
     }
-
-
-
 }

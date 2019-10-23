@@ -1,11 +1,9 @@
 package com.asiainfo.security.service;
 
 import com.asiainfo.dataservice.entity.EntityPage;
-import com.asiainfo.security.entity.datapermisson.UserDP;
 import com.asiainfo.security.entity.criteria.UserMongoCriteria;
+import com.asiainfo.security.entity.datapermisson.UserDP;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
 
 /**
  * @author Mr.LkZ
@@ -42,7 +40,7 @@ public interface UserMongoService {
 
     /**
      * 删除用户,实际是将enable设为false,并非真正从数据库删除用户
-     * @param id
+     * @param id 用户id
      */
     void delete(String id);
 

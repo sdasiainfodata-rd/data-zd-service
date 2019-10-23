@@ -1,15 +1,15 @@
 package com.asiainfo.security.service.impl;
 
 import com.asiainfo.dataservice.entity.EntityPage;
+import com.asiainfo.security.entity.criteria.RoleMongoCriteria;
 import com.asiainfo.security.entity.datapermisson.PermissionDp;
 import com.asiainfo.security.entity.datapermisson.RoleDP;
 import com.asiainfo.security.entity.datapermisson.TreeDp;
-import com.asiainfo.security.entity.criteria.RoleMongoCriteria;
 import com.asiainfo.security.service.PermissionMongoService;
 import com.asiainfo.security.service.RoleMongoService;
+import com.asiainfo.security.utils.CommenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -45,10 +45,7 @@ public class RoleMongoServiceImpl implements RoleMongoService {
         Criteria criteria = Criteria.where("is_delete").is(false).and("role_name").is(rolename);
         query.addCriteria(criteria);
         RoleDP role = mongoTemplate.findOne(query, RoleDP.class, "roles");
-        if (role!=null) {
-            role.set_id(role.get_id().toString());
-            role.setPermissions(getPermissionEntiyList(role.getPermissions()));
-        }
+        if (role!=null) role.setPermissions(getPermissionEntiyList(role.getPermissions()));
         return role;
     }
 
@@ -71,21 +68,17 @@ public class RoleMongoServiceImpl implements RoleMongoService {
             //分页参数
             pageSize = pageable.getPageSize();
             num = pageable.getPageNumber();
-            int start = (num - 1) * pageSize;
-            query.skip(start);
-            query.limit(pageSize);
-            //设置排序
-            Sort sort = pageable.getSort();
-            query.with(sort);
+            CommenUtils.addPageCriteria(pageable, query, num, pageSize);
         }
 
         List<RoleDP> list = mongoTemplate.find(query, RoleDP.class, "roles");
-        ArrayList<RoleDP> roles = new ArrayList<>();
+//        ArrayList<RoleDP> roles = new ArrayList<>();
         for (RoleDP role : list) {
             List<Object> permissions = role.getPermissions();
+            if (permissions == null)continue;
             role.setPermissions(getPermissionEntiyList(permissions));
-            role.set_id(role.get_id().toString());
-            roles.add(role);
+//            role.set_id(role.get_id().toString());
+//            roles.add(role);
         }
 
         //封装实体页
@@ -93,9 +86,10 @@ public class RoleMongoServiceImpl implements RoleMongoService {
         entityPage.setPage(num);
         entityPage.setSize(pageSize);
         entityPage.setTotalElements(totalElements);
-        entityPage.setContent(roles);
+        entityPage.setContent(list);
         return entityPage;
     }
+
 
     private ArrayList<Object> getPermissionEntiyList(List<Object> permissions) {
         if (CollectionUtils.isEmpty(permissions)) return null;
@@ -151,7 +145,7 @@ public class RoleMongoServiceImpl implements RoleMongoService {
 
     /**
      * 删除角色,实际是将enable设为false,并非真正从数据库删除角色
-     * @param id
+     * @param id 角色id
      */
     @Override
     public void delete(String id) {
@@ -170,12 +164,11 @@ public class RoleMongoServiceImpl implements RoleMongoService {
         ArrayList<TreeDp> treeDps = new ArrayList<>();
         for (RoleDP roleDP : roleDPS) {
             TreeDp treeDp = new TreeDp();
-            treeDp.setId(roleDP.get_id().toString());
+            treeDp.setId(roleDP.get_id());
             treeDp.setLabel(roleDP.getRoleName());
             treeDps.add(treeDp);
         }
 
         return treeDps;
     }
-
 }

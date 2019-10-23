@@ -1,9 +1,9 @@
 package com.asiainfo.security.service;
 
 import com.asiainfo.dataservice.entity.EntityPage;
+import com.asiainfo.security.entity.criteria.RoleMongoCriteria;
 import com.asiainfo.security.entity.datapermisson.RoleDP;
 import com.asiainfo.security.entity.datapermisson.TreeDp;
-import com.asiainfo.security.entity.criteria.RoleMongoCriteria;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -43,7 +43,7 @@ public interface RoleMongoService {
 
     /**
      * 删除角色,实际是将enable设为false,并非真正从数据库删除角色
-     * @param id
+     * @param id 角色id
      */
     void delete(String id);
 
