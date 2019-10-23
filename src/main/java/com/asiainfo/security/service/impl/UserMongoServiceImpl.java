@@ -8,6 +8,7 @@ import com.asiainfo.security.service.RoleMongoService;
 import com.asiainfo.security.service.UserMongoService;
 import com.asiainfo.security.utils.CommenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -32,6 +33,8 @@ public class UserMongoServiceImpl implements UserMongoService {
     private MongoTemplate mongoTemplate;
     @Autowired
     private RoleMongoService roleMongoService;
+    @Value("${mongodb.data.consumers.consumers1}")
+    private String consumers1;
 
     /**
      * 根据用户名查询可用的用户
@@ -43,7 +46,7 @@ public class UserMongoServiceImpl implements UserMongoService {
         Query query = new Query();
         Criteria criteria = Criteria.where("is_delete").is(false).and("username").is(username);
         query.addCriteria(criteria);
-        UserDP userDp = mongoTemplate.findOne(query, UserDP.class, "user_dp");
+        UserDP userDp = mongoTemplate.findOne(query, UserDP.class, consumers1);
         if (userDp!=null) userDp.setDataRoles(getRoleEntityList(userDp.getDataRoles()));
         return userDp;
     }
@@ -68,7 +71,7 @@ public class UserMongoServiceImpl implements UserMongoService {
             query.addCriteria(username);
         }
 
-        long totalElements = mongoTemplate.count(query, long.class, "user_dp");
+        long totalElements = mongoTemplate.count(query, long.class, consumers1);
         int num = 0;
         int pageSize = 0;
 
@@ -79,7 +82,7 @@ public class UserMongoServiceImpl implements UserMongoService {
             CommenUtils.addPageCriteria(pageable, query, num, pageSize);
         }
 
-        List<UserDP> list = mongoTemplate.find(query, UserDP.class, "user_dp");
+        List<UserDP> list = mongoTemplate.find(query, UserDP.class, consumers1);
 //        ArrayList<UserDP> users = new ArrayList<>();
         for (UserDP user : list) {
 //            user.set_id(user.get_id().toString());
@@ -124,7 +127,7 @@ public class UserMongoServiceImpl implements UserMongoService {
         if (user!=null) throw new RuntimeException("已存在该用户...");
         resources.setCreateTime(new Date());
         resources.setLastUpdateTime(new Date());
-        return mongoTemplate.save(resources, "user_dp");
+        return mongoTemplate.save(resources, consumers1);
     }
 
     /**
@@ -133,11 +136,11 @@ public class UserMongoServiceImpl implements UserMongoService {
      */
     @Override
     public void update(UserDP resources) {
-        HashMap user = mongoTemplate.findById(resources.get_id(),HashMap.class ,"user_dp");
+        HashMap user = mongoTemplate.findById(resources.get_id(),HashMap.class ,consumers1);
         if (user==null) throw new RuntimeException("不存在该用户...");
         resources.setCreateTime((Date) user.get("create_time"));
         resources.setLastUpdateTime(new Date());
-        mongoTemplate.save(resources,"user_dp" );
+        mongoTemplate.save(resources,consumers1 );
     }
 
     /**
@@ -149,6 +152,6 @@ public class UserMongoServiceImpl implements UserMongoService {
         UserDP userDP = mongoTemplate.findById(id, UserDP.class);
         if (userDP==null)throw new RuntimeException("不存在该用户id值...");
         userDP.setDelete(true);
-        mongoTemplate.save(userDP,"user_dp" );
+        mongoTemplate.save(userDP,consumers1 );
     }
 }

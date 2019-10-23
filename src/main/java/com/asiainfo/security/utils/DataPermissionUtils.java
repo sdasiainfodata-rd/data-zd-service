@@ -2,6 +2,7 @@ package com.asiainfo.security.utils;
 
 import com.asiainfo.security.entity.datapermisson.UserDP;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -18,6 +19,10 @@ import java.util.*;
 public class DataPermissionUtils {
     @Autowired
     private MongoTemplate mongoTemplate;
+    @Value("${mongodb.data.consumers.consumers1}")
+    private String consumers1;
+    @Value("${mongodb.data.roles}")
+    private String roles;
 
 
     /**
@@ -57,7 +62,7 @@ public class DataPermissionUtils {
         Criteria criteria = Criteria.where("is_delete").is(false).and("data_roles").exists(true)
                 .and("username").is(username);
         query.addCriteria(criteria);
-        return mongoTemplate.findOne(query, UserDP.class, "user_dp");
+        return mongoTemplate.findOne(query, UserDP.class, consumers1);
     }
 
     /**
@@ -89,7 +94,7 @@ public class DataPermissionUtils {
         for (Object roleName : roles) {
 //            Criteria exists = Criteria.where(roleName).exists(true);
             Criteria criteria = Criteria.where("is_delete").is(false).and("role_name").is(roleName);
-            HashMap role = mongoTemplate.findOne(new Query().addCriteria(criteria), HashMap.class, "roles");
+            HashMap role = mongoTemplate.findOne(new Query().addCriteria(criteria), HashMap.class, this.roles);
             //noinspection unchecked
             ArrayList<String> rolePermissions = (ArrayList<String>) role.get("permissions");
             permissions.addAll(rolePermissions);

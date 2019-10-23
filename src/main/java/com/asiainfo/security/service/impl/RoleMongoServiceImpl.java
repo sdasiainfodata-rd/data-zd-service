@@ -9,6 +9,7 @@ import com.asiainfo.security.service.PermissionMongoService;
 import com.asiainfo.security.service.RoleMongoService;
 import com.asiainfo.security.utils.CommenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -33,6 +34,8 @@ public class RoleMongoServiceImpl implements RoleMongoService {
     private MongoTemplate mongoTemplate;
     @Autowired
     private PermissionMongoService permissionMongoService;
+    @Value("${mongodb.data.roles}")
+    private String roles;
 
     /**
      * 根据角色名查询可用的角色
@@ -44,7 +47,7 @@ public class RoleMongoServiceImpl implements RoleMongoService {
         Query query = new Query();
         Criteria criteria = Criteria.where("is_delete").is(false).and("role_name").is(rolename);
         query.addCriteria(criteria);
-        RoleDP role = mongoTemplate.findOne(query, RoleDP.class, "roles");
+        RoleDP role = mongoTemplate.findOne(query, RoleDP.class, roles);
         if (role!=null) role.setPermissions(getPermissionEntiyList(role.getPermissions()));
         return role;
     }
@@ -60,7 +63,7 @@ public class RoleMongoServiceImpl implements RoleMongoService {
         Query query = new Query();
         addCriteria(criteria, query);
 
-        long totalElements = mongoTemplate.count(query, long.class, "roles");
+        long totalElements = mongoTemplate.count(query, long.class, roles);
         int num = 0;
         int pageSize = 0;
 
@@ -71,7 +74,7 @@ public class RoleMongoServiceImpl implements RoleMongoService {
             CommenUtils.addPageCriteria(pageable, query, num, pageSize);
         }
 
-        List<RoleDP> list = mongoTemplate.find(query, RoleDP.class, "roles");
+        List<RoleDP> list = mongoTemplate.find(query, RoleDP.class, roles);
 //        ArrayList<RoleDP> roles = new ArrayList<>();
         for (RoleDP role : list) {
             List<Object> permissions = role.getPermissions();
@@ -126,7 +129,7 @@ public class RoleMongoServiceImpl implements RoleMongoService {
         if (role!=null) throw new RuntimeException("已存在该角色...");
         resources.setCreateTime(new Date());
         resources.setLastUpdateTime(new Date());
-        return mongoTemplate.save(resources, "roles");
+        return mongoTemplate.save(resources, roles);
     }
 
     /**
@@ -135,12 +138,12 @@ public class RoleMongoServiceImpl implements RoleMongoService {
      */
     @Override
     public void update(RoleDP resources) {
-        HashMap role = mongoTemplate.findById(resources.get_id(),HashMap.class,"roles" );
+        HashMap role = mongoTemplate.findById(resources.get_id(),HashMap.class,roles );
         if (role==null) throw new RuntimeException("不存在该角色...");
 //        resources.set_id(role.get("_id").toString());
         resources.setCreateTime((Date) role.get("create_time"));
         resources.setLastUpdateTime(new Date());
-        mongoTemplate.save(resources,"roles" );
+        mongoTemplate.save(resources,roles );
     }
 
     /**
@@ -152,7 +155,7 @@ public class RoleMongoServiceImpl implements RoleMongoService {
         RoleDP roleDP = mongoTemplate.findById(id, RoleDP.class);
         if (roleDP==null)throw new RuntimeException("不存在该角色id值...");
         roleDP.setDelete(true);
-        mongoTemplate.save(roleDP,"roles" );
+        mongoTemplate.save(roleDP,roles );
     }
 
     @Override
@@ -160,7 +163,7 @@ public class RoleMongoServiceImpl implements RoleMongoService {
         Query query = new Query().addCriteria(Criteria.where("is_delete").is(false));
         addCriteria(criteria,query );
         List<RoleDP> roleDPS = mongoTemplate.find(query,
-                RoleDP.class, "roles");
+                RoleDP.class, roles);
         ArrayList<TreeDp> treeDps = new ArrayList<>();
         for (RoleDP roleDP : roleDPS) {
             TreeDp treeDp = new TreeDp();

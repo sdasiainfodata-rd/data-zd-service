@@ -77,7 +77,7 @@ public class MyAuthorizedFilter implements Filter {
         }
         String requestURI = req.getRequestURI();
         //输出uri和权限
-        log.info(username+"uri:"+requestURI);
+        log.info(username+" uri:"+requestURI);
         for (String url : urls) {
             log.info("authority:"+url);
         }

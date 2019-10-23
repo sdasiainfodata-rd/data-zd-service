@@ -7,6 +7,7 @@ import com.asiainfo.security.entity.datapermisson.TreeDp;
 import com.asiainfo.security.service.PermissionMongoService;
 import com.asiainfo.security.utils.CommenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -28,6 +29,8 @@ import java.util.regex.Pattern;
 public class PermissonMongoServiceImpl implements PermissionMongoService {
     @Autowired
     private MongoTemplate mongoTemplate;
+    @Value("${mongodb.data.permissions}")
+    private String permissions;
 
     /**
      * 根据角色名查询可用的角色
@@ -39,7 +42,7 @@ public class PermissonMongoServiceImpl implements PermissionMongoService {
         Query query = new Query();
         Criteria criteria = Criteria.where("is_delete").is(false).and("permission_name").is(permissionName);
         query.addCriteria(criteria);
-        return mongoTemplate.findOne(query, PermissionDp.class, "permissions");
+        return mongoTemplate.findOne(query, PermissionDp.class, permissions);
 //        if (permissionDp!=null) permissionDp.set_id(permissionDp.get_id().toString());
 //        return permissionDp;
     }
@@ -54,7 +57,7 @@ public class PermissonMongoServiceImpl implements PermissionMongoService {
     public EntityPage<PermissionDp> queryAll(PermissionMongoCriteria criteria, Pageable pageable) {
         Query query = new Query();
         addCriteria(criteria, query);
-        long totalElements = mongoTemplate.count(query, long.class, "permissions");
+        long totalElements = mongoTemplate.count(query, long.class, permissions);
         int num = 0;
         int pageSize = 0;
 
@@ -65,7 +68,7 @@ public class PermissonMongoServiceImpl implements PermissionMongoService {
             CommenUtils.addPageCriteria(pageable, query, num, pageSize);
         }
 
-        List<PermissionDp> list = mongoTemplate.find(query, PermissionDp.class, "permissions");
+        List<PermissionDp> list = mongoTemplate.find(query, PermissionDp.class, permissions);
 //        ArrayList<PermissionDp> permissionDps = new ArrayList<>();
 //        for (PermissionDp permissionDp : list) {
 ////            permissionDp.set_id(permissionDp.get_id().toString());
@@ -102,7 +105,7 @@ public class PermissonMongoServiceImpl implements PermissionMongoService {
         if (permissionDp!=null) throw new RuntimeException("已存在该角色...");
         resources.setCreateTime(new Date());
         resources.setLastUpdateTime(new Date());
-        return mongoTemplate.save(resources, "permissions");
+        return mongoTemplate.save(resources, permissions);
     }
 
     /**
@@ -111,12 +114,12 @@ public class PermissonMongoServiceImpl implements PermissionMongoService {
      */
     @Override
     public void update(PermissionDp resources) {
-        HashMap permission = mongoTemplate.findById(resources.get_id(),HashMap.class,"permissions" );
+        HashMap permission = mongoTemplate.findById(resources.get_id(),HashMap.class,permissions );
         if (permission==null) throw new RuntimeException("不存在该角色...");
 //        resources.set_id(role.get("_id").toString());
         resources.setCreateTime((Date) permission.get("create_time"));
         resources.setLastUpdateTime(new Date());
-        mongoTemplate.save(resources,"permissions" );
+        mongoTemplate.save(resources,permissions );
     }
 
     /**
@@ -128,7 +131,7 @@ public class PermissonMongoServiceImpl implements PermissionMongoService {
         PermissionDp permissionDp = mongoTemplate.findById(id, PermissionDp.class);
         if (permissionDp==null)throw new RuntimeException("不存在该角色id值...");
         permissionDp.setDelete(true);
-        mongoTemplate.save(permissionDp,"permissions" );
+        mongoTemplate.save(permissionDp,permissions );
     }
 
     @Override
@@ -136,7 +139,7 @@ public class PermissonMongoServiceImpl implements PermissionMongoService {
         Query query = new Query().addCriteria(Criteria.where("is_delete").is(false));
         addCriteria(criteria,query );
         List<PermissionDp> permissionDps = mongoTemplate.find(query,
-                PermissionDp.class, "permissions");
+                PermissionDp.class, permissions);
         ArrayList<TreeDp> treeDps = new ArrayList<>();
         for (PermissionDp permissionDp : permissionDps) {
             TreeDp treeDp = new TreeDp();

@@ -26,3 +26,12 @@ logging:
 mongodb:
   data:
     collection1: news_data_permission
+    consumers:
+      consumers1: user_dp
+    roles: roles
+    permissions: permissions
+#jwt
+jwt:
+  secret: mySecret
+  expiration: 604800000
+  header: Authorization
