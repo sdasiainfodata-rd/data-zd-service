@@ -1,11 +1,8 @@
 package com.asiainfo.security.controller;
 
 import com.asiainfo.security.entity.criteria.PermissionMongoCriteria;
-import com.asiainfo.security.entity.criteria.RoleMongoCriteria;
 import com.asiainfo.security.entity.datapermisson.PermissionDp;
-import com.asiainfo.security.entity.datapermisson.RoleDP;
 import com.asiainfo.security.service.PermissionMongoService;
-import com.asiainfo.security.service.RoleMongoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;

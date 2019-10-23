@@ -53,10 +53,7 @@ public class MongoServiceImpl implements MongoService {
         );
         //collectionName是mongodb中数据仓库的名字,应该从配置文件中获得,或者前台返回,暂时写死
         AggregationResults<HashMap> aggregate = mongoTemplate.aggregate(agg,collection, HashMap.class);
-        ArrayList<HashMap> list = new ArrayList<>();
-        list.addAll(aggregate.getMappedResults());
-
-        return list;
+        return new ArrayList<>(aggregate.getMappedResults());
     }
 
     /**
@@ -88,9 +85,7 @@ public class MongoServiceImpl implements MongoService {
                 Aggregation.sort(Sort.Direction.DESC,"amount")
         );
         AggregationResults<HashMap> aggregationResults = mongoTemplate.aggregate(agg,collection ,HashMap.class);
-        ArrayList<HashMap> list = new ArrayList<>();
-        list.addAll(aggregationResults.getMappedResults());
-        return list;
+        return new ArrayList<>(aggregationResults.getMappedResults());
     }
 
     /**
@@ -124,7 +119,7 @@ public class MongoServiceImpl implements MongoService {
         //collectionName是mongodb中数据仓库的名字,应该从配置文件中获得,或者前台返回,暂时写死
         ArrayList<HashMap> list = (ArrayList<HashMap>) mongoTemplate.find(query, HashMap.class, collection);
         //封装实体页
-        EntityPage<HashMap> entityPage = new EntityPage<HashMap>();
+        EntityPage<HashMap> entityPage = new EntityPage<>();
         entityPage.setPage(num);
         entityPage.setSize(pageSize);
         entityPage.setTotalElements(totalElements);

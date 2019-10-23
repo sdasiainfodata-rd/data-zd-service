@@ -8,13 +8,7 @@ import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.core.convert.*;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 
-/**
- * @description:
- * When using spring data mongo it by default adds a _class key to your collection to be able to handle inheritance.
- * But if your domain model is simple and flat, you can remove it by overriding the default MappingMongoConverter
- * @author:@luomouren.
- * @Date:2017-12-03 21:26
- */
+
 @Configuration
 public class MongoNoClass {
 

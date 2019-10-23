@@ -1,9 +1,8 @@
 package com.asiainfo.security.controller;
 
+import com.asiainfo.security.entity.criteria.RoleMongoCriteria;
 import com.asiainfo.security.entity.datapermisson.PermissionDp;
 import com.asiainfo.security.entity.datapermisson.RoleDP;
-import com.asiainfo.security.entity.criteria.RoleMongoCriteria;
-import com.asiainfo.security.entity.datapermisson.UserDP;
 import com.asiainfo.security.service.PermissionMongoService;
 import com.asiainfo.security.service.RoleMongoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,7 +84,6 @@ public class RoleMongoController {
 
     private boolean isPermissionExist(String permissionName){
         PermissionDp permissionDp = permissionMongoService.findPermissionDpByName(permissionName);
-        if (permissionDp!=null) return true;
-        return false;
+        return permissionDp != null;
     }
 }

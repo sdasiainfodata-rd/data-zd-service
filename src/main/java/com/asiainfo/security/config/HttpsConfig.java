@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 /**
  * @author zhangyz
- * @date 2019/10/18 13:50
+ * date 2019/10/18 13:50
  * Spring Boot 不支持同时启动 HTTP 和 HTTPS ，为了解决这个问题，配置了 Http 的请求端口为 8000，所有来自 8000 的请求，将被自动重定向到 9090 这个 https 的端口上。
  */
 @Configuration
@@ -17,7 +17,7 @@ public class HttpsConfig {
     /**
      * spring boot 2.0
      *
-     * @return
+     * @return org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory
      */
     @Bean
     public TomcatServletWebServerFactory servletContainer() {
