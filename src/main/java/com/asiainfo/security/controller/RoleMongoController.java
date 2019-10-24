@@ -49,6 +49,8 @@ public class RoleMongoController {
 //    ("修改角色")
     @PutMapping(value = "/roles")
     public ResponseEntity update(@RequestBody RoleDP resources){
+    
+        System.out.println(resources.getRoleName());
         if (resources == null||StringUtils.isEmpty(resources.getRoleName()))
             throw new RuntimeException("角色名不能为空...");
         isPermissionsExist(resources);

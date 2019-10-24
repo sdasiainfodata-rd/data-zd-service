@@ -42,6 +42,8 @@ public class UserMongoController {
     public ResponseEntity create(@RequestBody UserDP resources){
         if (resources == null|| StringUtils.isEmpty(resources.getUsername()))
             throw new RuntimeException("用户名不能为空...");
+        System.out.println(resources);
+        System.out.println(StringUtils.isEmpty(resources.getUsername()));
         isRolesExist(resources);
         return new ResponseEntity(userMongoService.create(resources),HttpStatus.CREATED);
     }
