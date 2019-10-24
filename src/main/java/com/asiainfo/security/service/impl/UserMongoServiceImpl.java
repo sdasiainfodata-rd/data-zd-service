@@ -60,6 +60,7 @@ public class UserMongoServiceImpl implements UserMongoService {
     @Override
     public EntityPage<UserDP> queryAll(UserMongoCriteria criteria, Pageable pageable) {
         Query query = new Query();
+        query.addCriteria(Criteria.where("is_delete").is(false));
         if (criteria!= null&&!StringUtils.isEmpty(criteria.getUsername())) {
             //根据criteria获取用户名
             Pattern pattern = Pattern.compile("^.*" + criteria.getUsername() + ".*$", Pattern.CASE_INSENSITIVE);

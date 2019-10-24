@@ -56,6 +56,7 @@ public class PermissonMongoServiceImpl implements PermissionMongoService {
     @Override
     public EntityPage<PermissionDp> queryAll(PermissionMongoCriteria criteria, Pageable pageable) {
         Query query = new Query();
+        query.addCriteria(Criteria.where("is_delete").is(false));
         addCriteria(criteria, query);
         long totalElements = mongoTemplate.count(query, long.class, permissions);
         int num = 0;
