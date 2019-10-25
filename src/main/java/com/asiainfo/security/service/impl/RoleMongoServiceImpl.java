@@ -5,6 +5,7 @@ import com.asiainfo.security.entity.criteria.RoleMongoCriteria;
 import com.asiainfo.security.entity.datapermisson.PermissionDp;
 import com.asiainfo.security.entity.datapermisson.RoleDP;
 import com.asiainfo.security.entity.datapermisson.TreeDp;
+import com.asiainfo.security.entity.datapermisson.UserDP;
 import com.asiainfo.security.service.PermissionMongoService;
 import com.asiainfo.security.service.RoleMongoService;
 import com.asiainfo.security.utils.CommenUtils;
@@ -155,10 +156,16 @@ public class RoleMongoServiceImpl implements RoleMongoService {
     public void delete(String id) {
         RoleDP roleDP = mongoTemplate.findById(id, RoleDP.class);
         if (roleDP==null)throw new RuntimeException("不存在该角色id值...");
+        if (isRoleUsedByUsers(roleDP.getRoleName()))throw new RuntimeException("该角色正在被用户使用...");
         roleDP.setDelete(true);
         mongoTemplate.save(roleDP,roles );
     }
 
+    /**
+     * 创建易于前端显示的结构
+     * @param criteria 条件
+     * @return java.util.List
+     */
     @Override
     public List<TreeDp> createTree(RoleMongoCriteria criteria) {
         Query query = new Query().addCriteria(Criteria.where("is_delete").is(false));
@@ -174,5 +181,16 @@ public class RoleMongoServiceImpl implements RoleMongoService {
         }
 
         return treeDps;
+    }
+
+    private boolean isRoleUsedByUsers(String RoleName){
+        return !CollectionUtils.isEmpty(findUsersByRole(RoleName));
+    }
+
+    private List<UserDP> findUsersByRole(String RoleName){
+        Query query = new Query();
+        Criteria criteria = Criteria.where("is_delete").is(false).and("data_roles").is(RoleName);
+        query.addCriteria(criteria);
+        return mongoTemplate.find(query, UserDP.class, "user_dp");
     }
 }

@@ -3,6 +3,7 @@ package com.asiainfo.security.service.impl;
 import com.asiainfo.dataservice.entity.EntityPage;
 import com.asiainfo.security.entity.criteria.PermissionMongoCriteria;
 import com.asiainfo.security.entity.datapermisson.PermissionDp;
+import com.asiainfo.security.entity.datapermisson.RoleDP;
 import com.asiainfo.security.entity.datapermisson.TreeDp;
 import com.asiainfo.security.service.PermissionMongoService;
 import com.asiainfo.security.utils.CommenUtils;
@@ -13,6 +14,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -131,10 +133,16 @@ public class PermissonMongoServiceImpl implements PermissionMongoService {
     public void delete(String id) {
         PermissionDp permissionDp = mongoTemplate.findById(id, PermissionDp.class);
         if (permissionDp==null)throw new RuntimeException("不存在该角色id值...");
+        if (isPermissionUsedByRoles(permissionDp.getPermissionName()))throw new RuntimeException("该权限正在被角色使用...");
         permissionDp.setDelete(true);
         mongoTemplate.save(permissionDp,permissions );
     }
 
+    /**
+     * 创建易于前端显示的结构
+     * @param criteria 条件
+     * @return java.util.List
+     */
     @Override
     public List<TreeDp> createTree(PermissionMongoCriteria criteria) {
         Query query = new Query().addCriteria(Criteria.where("is_delete").is(false));
@@ -149,5 +157,16 @@ public class PermissonMongoServiceImpl implements PermissionMongoService {
             treeDps.add(treeDp);
         }
         return treeDps;
+    }
+
+    private boolean isPermissionUsedByRoles(String permissionsName){
+        return !CollectionUtils.isEmpty(findRolesByPermission(permissionsName));
+    }
+
+    private List<RoleDP> findRolesByPermission(String permission){
+        Query query = new Query();
+        Criteria criteria = Criteria.where("is_delete").is(false).and("permissions").is(permission);
+        query.addCriteria(criteria);
+        return mongoTemplate.find(query, RoleDP.class, "roles");
     }
 }
